@@ -817,6 +817,33 @@
       font-weight: 700;
     }
 
+    .diagram {
+      margin: 18px 0 8px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.02);
+      padding: 18px 16px 8px;
+      overflow-x: auto;
+    }
+
+    .diagram .mermaid {
+      display: flex;
+      justify-content: center;
+      min-height: 40px;
+    }
+
+    .diagram .mermaid svg {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .diagram figcaption {
+      margin-top: 12px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
     .placeholder-stage {
       text-align: center;
       padding: 60px 24px;
@@ -917,7 +944,7 @@
       <button type="button" class="active" data-view="overview">Обзор</button>
       <button type="button" class="ready" data-view="stage-1">1 · Toy Agent</button>
       <button type="button" class="ready" data-view="stage-2">2 · Agent Core</button>
-      <button type="button" class="soon" data-view="stage-3" disabled>3 · Tool Runtime</button>
+      <button type="button" class="ready" data-view="stage-3">3 · Tool Runtime</button>
       <button type="button" class="soon" data-view="stage-4" disabled>4 · Workspace</button>
       <button type="button" class="soon" data-view="stage-5" disabled>5 · CLI</button>
       <button type="button" class="soon" data-view="stage-6" disabled>6 · Server</button>
@@ -1097,7 +1124,7 @@
               <h4>Неделя 2 — исполнитель и edge cases</h4>
               <ul>
                 <li><code>ToolExecutor</code>: timeout, обрезка большого output.</li>
-                <li>Unknown tool, параллельный запуск через <code>asyncio.gather</code>.</li>
+                <li>Unknown tool, последовательное исполнение нескольких calls.</li>
                 <li>Тест на каждый edge case из чеклиста.</li>
               </ul>
             </div>
@@ -1114,6 +1141,9 @@
         <div class="step-links">
           <a href="steps/03-tool-runtime/README.md">README</a>
           <a href="steps/03-tool-runtime/edge-cases.md">Edge cases</a>
+        </div>
+        <div class="step-drill">
+          <button type="button" class="btn-drill" data-view="stage-3">Подробнее →</button>
         </div>
       </article>
 
@@ -1953,6 +1983,87 @@
             Ядро крутит цикл и публикует события. Клиент подписывается и рисует вывод — или просто
             собирает события в лог. Тот же Agent Core позже будет стоять за HTTP API без изменений.
           </p>
+
+          <figure class="diagram">
+            <div class="mermaid">
+sequenceDiagram
+  participant H as История (контекст)
+  participant Core as Agent Core
+  participant M as Model
+  Note over H: [user: «посчитай (2+3)*10»]
+  Core->>M: история — 1 сообщение
+  M-->>Core: tool_call add(2,3)
+  Note over H: + assistant(tool_call)
+  Core->>Core: исполнить → 5
+  Note over H: + tool(5) → 3 сообщения
+  Core->>M: история — 3 сообщения
+  M-->>Core: tool_call mul(5,10)
+  Note over H: + assistant(tool_call)
+  Core->>Core: исполнить → 50
+  Note over H: + tool(50) → 5 сообщений
+  Core->>M: история — 5 сообщений
+  M-->>Core: final: «ответ 50»
+  Note over H: + assistant(final) → 6 сообщений
+            </div>
+            <figcaption>Рост контекста: каждый шаг дописывает сообщения в историю — это и есть «память» агента, которую видит модель.</figcaption>
+          </figure>
+
+          <figure class="diagram">
+            <div class="mermaid">
+flowchart TD
+  In["Вход шага:&lt;br/&gt;текущая история + RunState = running"] --> Ask["ModelClient.complete(история, описания tools)"]
+  Ask --> Dec{"Что вернула модель?"}
+  Dec -- "final answer" --> Fin["дописать assistant(final)&lt;br/&gt;RunState → completed"]
+  Dec -- "tool call" --> Lim{"шаг &gt; max_steps?"}
+  Lim -- "да" --> MS["RunState → max_steps&lt;br/&gt;остановка без падения"]
+  Lim -- "нет" --> Exec["исполнить tool&lt;br/&gt;этап 3: через tool_runtime"]
+  Exec --> App["дописать assistant(tool_call) + tool(result)"]
+  App --> Ev["выпустить события step / tool"]
+  Ev --> Out["Выход: история выросла, шаг++&lt;br/&gt;назад в цикл"]
+  Out -.-> In
+            </div>
+            <figcaption>Анатомия одного шага: где ядро спрашивает модель, где проверяет лимит и как растёт история за одну итерацию.</figcaption>
+          </figure>
+
+          <figure class="diagram">
+            <div class="mermaid">
+sequenceDiagram
+  actor User as Пользователь
+  participant Cli as Thin Client (toy_agent)
+  participant Core as Agent Core
+  participant MC as ModelClient
+  participant RT as Tools
+  User->>Cli: задача
+  Cli->>Core: run(task) + wiring (mock/live, tools)
+  loop пока не финал или лимит
+    Core->>MC: complete(история, tools)
+    alt модель выбрала tool
+      MC-->>Core: tool_call
+      Core->>RT: execute(tool_call)
+      RT-->>Core: ToolResult
+    else модель дала ответ
+      MC-->>Core: final answer
+    end
+  end
+  Core-->>Cli: поток событий + финальный статус
+  Cli-->>User: ответ + timeline
+            </div>
+            <figcaption>Кто кого вызывает: клиент только собирает и показывает, ядро ведёт диалог с моделью и tools.</figcaption>
+          </figure>
+
+          <figure class="diagram">
+            <div class="mermaid">
+flowchart TB
+  subgraph L4["④ Адаптеры — Mock · OpenAI · CLI · Server · Web"]
+    subgraph L3["③ Порты — ModelClient (Protocol)"]
+      subgraph L2["② Логика — Agent Loop"]
+        L1["① Домен&lt;br/&gt;RunState · Message · AgentEvent"]
+      end
+    end
+  end
+            </div>
+            <figcaption>Слои зависимостей: ① домен в центре, наружу — логика, порты, адаптеры. Зависимости направлены внутрь: деталь знает о ядре, ядро о детали — нет.</figcaption>
+          </figure>
         </section>
 
         <section class="stage-section">
@@ -2169,7 +2280,428 @@
     </div><!-- /view-stage-2 -->
 
     <!-- Placeholders for stages 3-8 -->
-    <div id="view-stage-3" class="view"><div class="placeholder-stage"><h2>Этап 3 · Tool Runtime</h2><p>Детальный разбор скоро</p><div class="step-links" style="justify-content:center;margin-top:20px"><a href="steps/03-tool-runtime/README.md">README</a><a href="steps/03-tool-runtime/edge-cases.md">Edge cases</a></div></div></div>
+    <div id="view-stage-3" class="view">
+      <button type="button" class="stage-back" data-view="overview">← Назад к обзору</button>
+
+      <header class="stage-hero">
+        <div class="eyebrow">этап 3 · 2 недели</div>
+        <h2>Tool Runtime Library</h2>
+        <p class="desc">
+          Исполнение инструментов выносится из Agent Core в отдельную библиотеку. Появляется реестр,
+          валидация входа по схеме и безопасный executor: timeout, лимит вывода, структурированные ошибки.
+          Ядро больше не «выполняет» tools само — оно делегирует это контракту tool_runtime.
+        </p>
+        <div class="stage-materials">
+          <span class="label">Материалы:</span>
+          <a href="steps/03-tool-runtime/README.md">README</a>
+          <a href="steps/03-tool-runtime/edge-cases.md">Edge cases</a>
+          <a href="steps/README.md">Все шаги</a>
+        </div>
+      </header>
+
+      <nav class="stage-tabs" aria-label="Разделы этапа">
+        <button type="button" class="active" data-panel="review">Обзор этапа</button>
+        <button type="button" data-panel="example">Как это работает</button>
+        <button type="button" data-panel="steps">Прогресс изучения</button>
+        <button type="button" data-panel="dod">Definition of Done</button>
+      </nav>
+
+      <!-- ── Panel: Review ── -->
+      <div data-panel="review" class="stage-panel active">
+        <div class="info-grid">
+          <div class="info-card">
+            <h4>Зачем этот этап</h4>
+            <ul>
+              <li>На этапе 2 tools передавались в ядро «как есть» — без валидации, лимитов и изоляции ошибок.</li>
+              <li>Исполнение инструмента — это <strong>опасная зона</strong>: timeout, исключение, гигантский вывод. Ей нужна своя граница.</li>
+              <li>Появляется <strong>единый контракт результата</strong> (ToolResult) — любой tool возвращает данные одной формы.</li>
+              <li>Джун учится отделять <strong>«что вызвать»</strong> (решение модели) от <strong>«как безопасно выполнить»</strong> (runtime).</li>
+            </ul>
+          </div>
+          <div class="info-card">
+            <h4>Чего здесь НЕ делаем</h4>
+            <ul>
+              <li>Нет конкретных «настоящих» tools (файлы, shell, git) — это этап 4. Здесь только runtime + 2–3 demo-tool.</li>
+              <li>Нет approvals и policy «спросить пользователя» — это этап 5 (CLI).</li>
+              <li>Нет sandbox файловой системы и workspace root — этап 4.</li>
+              <li>Не меняем Agent Loop по смыслу — меняем только то, как ядро вызывает инструмент.</li>
+            </ul>
+          </div>
+        </div>
+
+        <section class="stage-section">
+          <h3>Концепции этапа</h3>
+          <div class="step-list">
+            <div class="step-item">
+              <div class="head"><b>ToolRegistry</b><span>каталог</span></div>
+              <p style="margin:0;color:var(--muted);font-size:14px">
+                Реестр доступных инструментов: имя → (схема входа + функция). Источник правды о том,
+                какие tools вообще существуют. Отсюда же берётся описание tools для передачи модели.
+              </p>
+            </div>
+            <div class="step-item">
+              <div class="head"><b>ToolSpec &amp; Schema</b><span>контракт входа</span></div>
+              <p style="margin:0;color:var(--muted);font-size:14px">
+                Каждый tool описан схемой аргументов на pydantic. Схема — это и валидация входа,
+                и автогенерируемое описание для LLM. Невалидный вход отсекается до запуска кода.
+              </p>
+            </div>
+            <div class="step-item">
+              <div class="head"><b>ToolResult</b><span>контракт выхода</span></div>
+              <p style="margin:0;color:var(--muted);font-size:14px">
+                Единая форма результата: ok с данными или error с причиной. Никаких raw exception наружу —
+                всё, что случилось при исполнении, превращается в данные, которые попадут в историю.
+              </p>
+            </div>
+            <div class="step-item">
+              <div class="head"><b>ToolExecutor</b><span>безопасное исполнение</span></div>
+              <p style="margin:0;color:var(--muted);font-size:14px">
+                Запускает tool под защитой: timeout, обрезка большого вывода, перехват исключений.
+                Executor — единственное место, где tool реально выполняется.
+              </p>
+            </div>
+            <div class="step-item">
+              <div class="head"><b>Validation Boundary</b><span>граница</span></div>
+              <p style="margin:0;color:var(--muted);font-size:14px">
+                Сначала валидируем вход по схеме, только потом исполняем. Неизвестный tool и битые
+                аргументы отклоняются как структурированная ошибка, а не как crash.
+              </p>
+            </div>
+            <div class="step-item">
+              <div class="head"><b>Sequential Execution</b><span>стратегия</span></div>
+              <p style="margin:0;color:var(--muted);font-size:14px">
+                Несколько tool calls с одного шага исполняются строго по очереди, в порядке запроса.
+                Это предсказуемо и безопасно: никаких гонок и скрытых зависимостей. Параллелизм — не цель этого этапа.
+              </p>
+            </div>
+            <div class="step-item">
+              <div class="head"><b>Output Limits</b><span>защита контекста</span></div>
+              <p style="margin:0;color:var(--muted);font-size:14px">
+                Слишком большой вывод обрезается с пометкой об усечении — чтобы не раздуть контекст модели
+                и не уронить следующий шаг. Лимит — осознанное решение runtime, а не случайность.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="stage-section">
+          <h3>Паттерны, которые закрепляем</h3>
+          <ul>
+            <li><strong>Registry</strong> — централизованный каталог tools вместо разрозненных функций.</li>
+            <li><strong>Command</strong> — tool call как данные (имя + аргументы), исполняемые отдельно.</li>
+            <li><strong>Result Object</strong> — успех и ошибка как значения, не как поток исключений.</li>
+            <li><strong>Boundary / Anti-corruption</strong> — runtime защищает ядро от хаоса исполнения tools.</li>
+            <li><strong>Schema-first</strong> — pydantic-схема как единый источник валидации и описания.</li>
+            <li><strong>Sequential pipeline</strong> — tool calls обрабатываются по очереди, без гонок.</li>
+          </ul>
+        </section>
+
+        <section class="stage-section">
+          <h3>Архитектура (концептуально)</h3>
+          <div class="flow-diagram">
+            <span class="node">Agent Core</span>
+            <span class="arrow">→</span>
+            <span class="node">ToolRegistry</span>
+            <span class="arrow">→</span>
+            <span class="node">Validation</span>
+            <span class="arrow">→</span>
+            <span class="node">ToolExecutor</span>
+            <span class="arrow">→</span>
+            <span class="node">ToolResult</span>
+            <span class="arrow">→</span>
+            <span class="node">в историю</span>
+          </div>
+          <p>
+            Ядро получает от модели tool call (имя + аргументы) и отдаёт его в tool_runtime. Registry находит tool,
+            схема валидирует вход, executor исполняет под timeout и лимитом вывода, наружу возвращается ToolResult.
+            Что бы ни случилось внутри — ядро получает данные одной формы и кладёт их в контекст следующего шага.
+          </p>
+
+          <figure class="diagram">
+            <div class="mermaid">
+flowchart LR
+  TC["Tool call&lt;br/&gt;имя + аргументы"] --> R["ToolRegistry"]
+  R --> V["Schema validation"]
+  V --> E["ToolExecutor&lt;br/&gt;timeout · лимит вывода"]
+  E --> Res["ToolResult"]
+  Res --> H[("в историю")]
+            </div>
+            <figcaption>Pipeline: единый путь любого tool call — реестр → валидация → executor → результат.</figcaption>
+          </figure>
+
+          <figure class="diagram">
+            <div class="mermaid">
+flowchart TD
+  Start["Tool call"] --> Known{"Tool в Registry?"}
+  Known -- "нет" --> Err1["ToolResult.error&lt;br/&gt;unknown tool"]
+  Known -- "да" --> Valid{"Вход валиден?"}
+  Valid -- "нет" --> Err2["ToolResult.error&lt;br/&gt;invalid input"]
+  Valid -- "да" --> Run["Исполнение в Executor"]
+  Run --> Exc{"Исключение?"}
+  Exc -- "да" --> Err3["ToolResult.error&lt;br/&gt;exception"]
+  Exc -- "нет" --> TO{"Timeout?"}
+  TO -- "да" --> Err4["ToolResult.error&lt;br/&gt;timeout"]
+  TO -- "нет" --> Big{"Вывод велик?"}
+  Big -- "да" --> OkT["ToolResult.ok&lt;br/&gt;усечено + пометка"]
+  Big -- "нет" --> Ok["ToolResult.ok"]
+            </div>
+            <figcaption>Исход всегда ToolResult: любой сбой превращается в данные, а не в падение run.</figcaption>
+          </figure>
+
+          <figure class="diagram">
+            <div class="mermaid">
+sequenceDiagram
+  participant Core as Agent Core
+  participant RT as Tool Runtime
+  Core->>RT: tool call #1
+  activate RT
+  RT-->>Core: ToolResult #1
+  deactivate RT
+  Core->>RT: tool call #2
+  activate RT
+  RT-->>Core: ToolResult #2
+  deactivate RT
+  Note over Core,RT: строго по очереди — без гонок
+            </div>
+            <figcaption>Sequential: следующий tool стартует только после результата предыдущего.</figcaption>
+          </figure>
+
+          <figure class="diagram">
+            <div class="mermaid">
+flowchart LR
+  subgraph core["Agent Core"]
+    Loop["Agent Loop"]
+  end
+  subgraph rt["Tool Runtime"]
+    Reg["Registry"]
+    Val["Validation"]
+    Exec["Executor"]
+  end
+  Loop -- "tool call" --> Reg
+  Reg --> Val --> Exec
+  Exec -- "ToolResult" --> Loop
+  Exec -. "ловит" .-> Danger["timeout · exception&lt;br/&gt;большой вывод"]
+            </div>
+            <figcaption>Граница: ядро делегирует исполнение, runtime изолирует его от опасных исходов.</figcaption>
+          </figure>
+        </section>
+
+        <section class="stage-section">
+          <h3>Связь с соседними этапами</h3>
+          <ul>
+            <li><strong>Из этапа 2:</strong> tools, что передавались в ядро напрямую, переезжают за контракт runtime.</li>
+            <li><strong>Unknown tool</strong> из этапа 1 теперь обрабатывается на уровне Registry, а не внутри цикла.</li>
+            <li><strong>В этап 4:</strong> файловые и shell-инструменты будут строиться поверх этого runtime, а не сбоку.</li>
+            <li><strong>В этап 5:</strong> approvals встанут как policy <em>вокруг</em> executor — точка расширения уже готова.</li>
+          </ul>
+        </section>
+      </div>
+
+      <!-- ── Panel: Example ── -->
+      <div data-panel="example" class="stage-panel">
+        <section class="stage-section">
+          <h3>Сценарий: валидный tool call</h3>
+          <p><strong>Задача:</strong> модель просит calculator с корректными аргументами.</p>
+          <ol>
+            <li>Ядро отдаёт runtime tool call: имя <code>calculator</code>, аргументы <code>{ "a": 2, "b": 3 }</code>.</li>
+            <li>Registry находит tool; схема валидирует вход — ок.</li>
+            <li>Executor запускает функцию под timeout, получает результат.</li>
+            <li>Возврат ToolResult.ok с данными → ядро кладёт результат в историю.</li>
+            <li>Цикл продолжается со следующим шагом.</li>
+          </ol>
+        </section>
+
+        <section class="stage-section">
+          <h3>Сценарий: невалидный вход</h3>
+          <p><strong>Задача:</strong> модель передала <code>{ "a": "два" }</code> — не число и без <code>b</code>.</p>
+          <ol>
+            <li>Registry tool нашёл, но схема валидации входа падает.</li>
+            <li>Tool <strong>не исполняется</strong> — код функции даже не вызывается.</li>
+            <li>Возврат ToolResult.error с понятной причиной (что именно не так со входом).</li>
+            <li>Ошибка попадает в контекст; модель может исправиться на следующем шаге.</li>
+          </ol>
+        </section>
+
+        <section class="stage-section">
+          <h3>Сценарий: tool падает или зависает</h3>
+          <p><strong>Задача:</strong> tool бросает исключение либо уходит в бесконечный цикл.</p>
+          <ol>
+            <li>Исключение перехватывается executor → ToolResult.error, run не падает.</li>
+            <li>Зависание ловится по timeout → tool снимается, ToolResult.error «timeout».</li>
+            <li>В обоих случаях ядро получает данные одной формы и продолжает работу.</li>
+          </ol>
+        </section>
+
+        <section class="stage-section">
+          <h3>Сценарий: огромный вывод</h3>
+          <p><strong>Задача:</strong> tool вернул мегабайт текста.</p>
+          <ol>
+            <li>Executor обрезает вывод до лимита и добавляет пометку об усечении.</li>
+            <li>В историю попадает усечённая версия — контекст модели не раздувается.</li>
+            <li>Джун объясняет, почему лимит вывода — это про стоимость и стабильность, не про каприз.</li>
+          </ol>
+        </section>
+
+        <section class="stage-section">
+          <h3>Сценарий: несколько tool calls сразу</h3>
+          <p><strong>Задача:</strong> модель на одном шаге запросила два tool.</p>
+          <ol>
+            <li>Runtime исполняет их строго по очереди, в порядке запроса.</li>
+            <li>Результат первого tool готов до старта второго — никаких гонок.</li>
+            <li>Результаты собираются в предсказуемом порядке и кладутся в историю.</li>
+            <li>Джун объясняет: почему на этом этапе sequential важнее «скорости» параллелизма.</li>
+          </ol>
+        </section>
+
+        <section class="stage-section">
+          <h3>Что важно понять из примеров</h3>
+          <ul>
+            <li><strong>Валидация — до исполнения.</strong> Битый вход не доходит до кода tool.</li>
+            <li><strong>Любой исход — это ToolResult.</strong> Ошибка — значение, а не падение run.</li>
+            <li><strong>Executor — единственная точка</strong>, где tool реально выполняется и охраняется.</li>
+            <li><strong>Sequential by design</strong> — порядок предсказуем, параллелизм отложен до зрелого runtime.</li>
+          </ul>
+        </section>
+      </div>
+
+      <!-- ── Panel: Steps ── -->
+      <div data-panel="steps" class="stage-panel">
+        <section class="stage-section">
+          <h3>Неделя 1 — реестр, схемы, контракт результата</h3>
+          <div class="step-list">
+            <div class="step-item">
+              <div class="head"><b>Дни 1–2</b><span>Registry</span></div>
+              <ul>
+                <li>ToolRegistry: регистрация tool по имени + схема.</li>
+                <li>Lookup и список доступных tools (для передачи модели).</li>
+                <li>Unknown tool на уровне реестра → структурированная ошибка.</li>
+              </ul>
+            </div>
+            <div class="step-item">
+              <div class="head"><b>Дни 3–4</b><span>Schema &amp; Validation</span></div>
+              <ul>
+                <li>pydantic-схема входа на каждый tool.</li>
+                <li>Валидация аргументов до исполнения.</li>
+                <li>Описание tools для LLM генерируется из схем.</li>
+              </ul>
+            </div>
+            <div class="step-item">
+              <div class="head"><b>День 5</b><span>ToolResult</span></div>
+              <ul>
+                <li>Единый контракт: ok / error с причиной.</li>
+                <li>2–3 demo-tool (calculator, search-memory) под этот контракт.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="stage-section">
+          <h3>Неделя 2 — executor, edge cases, интеграция</h3>
+          <div class="step-list">
+            <div class="step-item">
+              <div class="head"><b>Дни 6–7</b><span>ToolExecutor</span></div>
+              <ul>
+                <li>Исполнение под timeout (asyncio).</li>
+                <li>Перехват исключений → ToolResult.error.</li>
+                <li>Обрезка большого вывода с пометкой.</li>
+              </ul>
+            </div>
+            <div class="step-item">
+              <div class="head"><b>День 8</b><span>Sequential execution</span></div>
+              <ul>
+                <li>Несколько tool calls с шага — строго по очереди.</li>
+                <li>Предсказуемый порядок результатов, без гонок.</li>
+              </ul>
+            </div>
+            <div class="step-item">
+              <div class="head"><b>День 9</b><span>Интеграция с ядром</span></div>
+              <ul>
+                <li>Agent Core вызывает tools только через tool_runtime.</li>
+                <li>Поведение цикла из этапа 2 сохранено.</li>
+              </ul>
+            </div>
+            <div class="step-item">
+              <div class="head"><b>День 10</b><span>Закрепление</span></div>
+              <ul>
+                <li>Тест на каждый edge case из чеклиста.</li>
+                <li>Demo: calculator + memory работают из коробки.</li>
+                <li>Устно: чем «решение вызвать tool» отличается от «исполнения tool».</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- ── Panel: DoD ── -->
+      <div data-panel="dod" class="stage-panel">
+        <section class="stage-section">
+          <h3>Definition of Done — Этап 3: Tool Runtime Library</h3>
+          <p>
+            Этап завершён, когда tool_runtime — самостоятельная библиотека: реестр, валидация и безопасный executor.
+            Agent Core вызывает tools только через неё, а джун объясняет все концепции ниже.
+          </p>
+        </section>
+
+        <div class="dod-group">
+          <h4>📚 ToolRegistry</h4>
+          <label><input type="checkbox"> Tools регистрируются по имени с привязанной схемой входа</label>
+          <label><input type="checkbox"> Есть lookup по имени и список доступных tools для передачи модели</label>
+          <label><input type="checkbox"> Unknown tool обрабатывается на уровне реестра как структурированная ошибка</label>
+        </div>
+
+        <div class="dod-group">
+          <h4>🧬 Schema &amp; Validation</h4>
+          <label><input type="checkbox"> У каждого tool есть pydantic-схема аргументов</label>
+          <label><input type="checkbox"> Вход валидируется ДО исполнения; невалидный вход не доходит до кода tool</label>
+          <label><input type="checkbox"> Описание tools для LLM генерируется из схем, а не пишется вручную дважды</label>
+        </div>
+
+        <div class="dod-group">
+          <h4>📦 ToolResult</h4>
+          <label><input type="checkbox"> Единый контракт результата: ok с данными или error с причиной</label>
+          <label><input type="checkbox"> Наружу не пробрасываются raw exceptions — всё превращается в ToolResult</label>
+          <label><input type="checkbox"> Application-level ошибка (tool отработал, но логически failed) различима в результате</label>
+        </div>
+
+        <div class="dod-group">
+          <h4>⚙️ ToolExecutor</h4>
+          <label><input type="checkbox"> Исполнение под timeout; зависший tool снимается, run не виснет</label>
+          <label><input type="checkbox"> Исключение внутри tool перехватывается → ToolResult.error</label>
+          <label><input type="checkbox"> Слишком большой вывод обрезается с пометкой об усечении</label>
+          <label><input type="checkbox"> Executor — единственное место реального исполнения tool</label>
+        </div>
+
+        <div class="dod-group">
+          <h4>🔀 Sequential execution</h4>
+          <label><input type="checkbox"> Несколько tool calls с одного шага исполняются строго по очереди</label>
+          <label><input type="checkbox"> Порядок результатов предсказуем и совпадает с порядком запроса</label>
+          <label><input type="checkbox"> Джун объясняет, почему на этом этапе не вводим параллелизм</label>
+        </div>
+
+        <div class="dod-group">
+          <h4>🔗 Интеграция</h4>
+          <label><input type="checkbox"> Agent Core вызывает инструменты только через tool_runtime</label>
+          <label><input type="checkbox"> Поведение цикла из этапа 2 сохранено</label>
+          <label><input type="checkbox"> Demo с calculator и search-memory работает из коробки</label>
+        </div>
+
+        <div class="dod-group">
+          <h4>✅ Тесты</h4>
+          <label><input type="checkbox"> Покрыты edge cases: timeout, exception, большой вывод, невалидный вход, unknown tool</label>
+          <label><input type="checkbox"> Покрыт параллельный и последовательный режимы</label>
+          <label><input type="checkbox"> Тесты детерминированы — без сети и реальных внешних эффектов</label>
+        </div>
+
+        <div class="dod-group">
+          <h4>🎓 Понимание (устная проверка ментором)</h4>
+          <label><input type="checkbox"> «Чем решение вызвать tool отличается от его исполнения?» — модель vs executor</label>
+          <label><input type="checkbox"> «Почему валидируем до исполнения?» — отсекаем мусор до запуска кода</label>
+          <label><input type="checkbox"> «Зачем лимит вывода?» — стоимость и стабильность контекста</label>
+          <label><input type="checkbox"> «Почему tools исполняем по очереди?» — предсказуемость, без гонок и скрытых зависимостей</label>
+          <label><input type="checkbox"> «Что добавит этап 4?» — настоящие tools (файлы, shell) поверх этого runtime</label>
+        </div>
+      </div>
+    </div><!-- /view-stage-3 -->
     <div id="view-stage-4" class="view"><div class="placeholder-stage"><h2>Этап 4 · Workspace Tools</h2><p>Детальный разбор скоро</p><div class="step-links" style="justify-content:center;margin-top:20px"><a href="steps/04-workspace-tools/README.md">README</a><a href="steps/04-workspace-tools/edge-cases.md">Edge cases</a></div></div></div>
     <div id="view-stage-5" class="view"><div class="placeholder-stage"><h2>Этап 5 · Coding CLI</h2><p>Детальный разбор скоро</p><div class="step-links" style="justify-content:center;margin-top:20px"><a href="steps/05-coding-cli/README.md">README</a><a href="steps/05-coding-cli/edge-cases.md">Edge cases</a></div></div></div>
     <div id="view-stage-6" class="view"><div class="placeholder-stage"><h2>Этап 6 · Agent Server</h2><p>Детальный разбор скоро</p><div class="step-links" style="justify-content:center;margin-top:20px"><a href="steps/06-agent-server/README.md">README</a><a href="steps/06-agent-server/edge-cases.md">Edge cases</a></div></div></div>
@@ -2383,6 +2915,8 @@
         if (rail) {
           rail.style.display = name === "overview" ? "" : "none";
         }
+        const activeView = document.getElementById("view-" + name);
+        if (activeView && window.__renderDiagrams) window.__renderDiagrams(activeView);
         history.replaceState(null, "", name === "overview" ? "#" : "#" + name);
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
@@ -2418,6 +2952,54 @@
         if (btn && !btn.disabled) showView(hash);
       }
     })();
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({
+      startOnLoad: false,
+      securityLevel: "loose",
+      theme: "base",
+      fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif",
+      themeVariables: {
+        background: "#0c1017",
+        primaryColor: "#182234",
+        primaryTextColor: "#eef4ff",
+        primaryBorderColor: "#2f80ed",
+        secondaryColor: "#131a25",
+        tertiaryColor: "#131a25",
+        lineColor: "#79ffe1",
+        textColor: "#eef4ff",
+        fontSize: "14px",
+        noteBkgColor: "#182234",
+        noteTextColor: "#eef4ff",
+        noteBorderColor: "#2f80ed",
+        actorBkg: "#182234",
+        actorBorder: "#2f80ed",
+        actorTextColor: "#eef4ff",
+        actorLineColor: "#9aa8bd",
+        signalColor: "#9aa8bd",
+        signalTextColor: "#eef4ff",
+        labelBoxBkgColor: "#182234",
+        labelBoxBorderColor: "#2f80ed",
+        labelTextColor: "#eef4ff",
+        loopTextColor: "#eef4ff",
+        sequenceNumberColor: "#0c1017"
+      }
+    });
+
+    // Lazy render: diagrams only render once their view is visible (real dimensions),
+    // otherwise mermaid breaks inside display:none containers.
+    const _rendered = new WeakSet();
+    window.__renderDiagrams = function (container) {
+      const nodes = [...container.querySelectorAll(".mermaid")].filter(n => !_rendered.has(n));
+      if (!nodes.length) return;
+      nodes.forEach(n => _rendered.add(n));
+      mermaid.run({ nodes });
+    };
+
+    const initial = document.querySelector(".view.active");
+    if (initial) window.__renderDiagrams(initial);
   </script>
 </body>
 </html>

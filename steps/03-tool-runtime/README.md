@@ -8,7 +8,7 @@ Registry, validation, executor: timeout, output limits, structured errors.
 
 - ToolRegistry, ToolExecutor, ToolResult
 - Schema validation (pydantic)
-- Parallel vs sequential execution
+- Sequential execution (no parallelism yet)
 - Explicit errors
 
 ## Материалы
