@@ -16,6 +16,7 @@
       --accent: #79ffe1;
       --warn: #ffd166;
       --radius: 18px;
+      --site-chrome-width: 1120px;
     }
 
     * {
@@ -880,8 +881,20 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="assets/css/site-chrome.css">
 </head>
 <body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="site-brand" href="agent-roadmap.html">Coding Agent</a>
+      <nav class="site-nav" aria-label="Навигация">
+        <a href="agent-roadmap.html" aria-current="page">Roadmap</a>
+        <a href="steps/">Steps</a>
+        <a href="docs/agent-edge-cases.html">Edge cases</a>
+        <a href="./">О проекте</a>
+      </nav>
+    </div>
+  </header>
   <main>
     <section class="hero">
       <div class="eyebrow">project-by-project implementation path</div>
