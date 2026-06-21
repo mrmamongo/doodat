@@ -1,0 +1,2410 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Coding Agent Roadmap</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0c1017;
+      --panel: #131a25;
+      --panel-strong: #182234;
+      --text: #eef4ff;
+      --muted: #9aa8bd;
+      --line: #2f80ed;
+      --accent: #79ffe1;
+      --warn: #ffd166;
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(47, 128, 237, 0.2), transparent 34rem),
+        radial-gradient(circle at bottom right, rgba(121, 255, 225, 0.13), transparent 30rem),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    main {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 56px 0 72px;
+    }
+
+    .hero {
+      margin-bottom: 40px;
+    }
+
+    .eyebrow {
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      font-size: clamp(38px, 7vw, 72px);
+      line-height: 0.95;
+      margin: 0 0 18px;
+      max-width: 900px;
+    }
+
+    .lead {
+      color: var(--muted);
+      font-size: clamp(18px, 2vw, 22px);
+      max-width: 780px;
+      margin: 0;
+    }
+
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .meta-pill {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 14px;
+    }
+
+    .meta-pill b {
+      color: var(--accent);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: 28px;
+      align-items: start;
+      margin-top: 42px;
+    }
+
+    .timeline {
+      position: relative;
+      display: grid;
+      gap: 22px;
+      padding-left: 40px;
+    }
+
+    .rail {
+      position: sticky;
+      top: 20px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .rail-card {
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+      box-shadow: 0 16px 50px rgba(0, 0, 0, 0.2);
+      padding: 18px 18px 20px;
+    }
+
+    .rail-card h3 {
+      margin: 0 0 4px;
+      font-size: 15px;
+      letter-spacing: 0.02em;
+    }
+
+    .rail-card .hint {
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .abs {
+      display: grid;
+      gap: 9px;
+    }
+
+    .abs-item {
+      display: grid;
+      gap: 2px;
+      padding-left: 12px;
+      border-left: 2px solid rgba(121, 255, 225, 0.35);
+    }
+
+    .abs-item b {
+      font-size: 13px;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .abs-item span {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .pat {
+      display: grid;
+      gap: 10px;
+    }
+
+    .pat-item {
+      display: grid;
+      grid-template-columns: 30px 1fr;
+      gap: 10px;
+      align-items: start;
+    }
+
+    .prio {
+      display: grid;
+      place-items: center;
+      height: 22px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+    }
+
+    .prio.p0 {
+      background: rgba(255, 105, 120, 0.16);
+      border: 1px solid rgba(255, 105, 120, 0.45);
+      color: #ff9aa6;
+    }
+
+    .prio.p1 {
+      background: rgba(255, 209, 102, 0.14);
+      border: 1px solid rgba(255, 209, 102, 0.4);
+      color: var(--warn);
+    }
+
+    .prio.p2 {
+      background: rgba(121, 255, 225, 0.1);
+      border: 1px solid rgba(121, 255, 225, 0.3);
+      color: var(--accent);
+    }
+
+    .pat-item b {
+      font-size: 13px;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .pat-item span {
+      font-size: 12px;
+      color: var(--muted);
+      display: block;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 4px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      top: 10px;
+      bottom: 10px;
+      left: 15px;
+      width: 3px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, var(--accent), var(--line), #8e5cff);
+      box-shadow: 0 0 24px rgba(47, 128, 237, 0.5);
+    }
+
+    .step {
+      position: relative;
+      padding: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.025));
+      box-shadow: 0 20px 70px rgba(0, 0, 0, 0.22);
+      backdrop-filter: blur(16px);
+    }
+
+    .step::before {
+      content: attr(data-index);
+      position: absolute;
+      left: -39px;
+      top: 24px;
+      display: grid;
+      width: 32px;
+      height: 32px;
+      place-items: center;
+      border: 3px solid var(--bg);
+      border-radius: 50%;
+      background: var(--accent);
+      color: #061019;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .step-top {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 280px;
+      gap: 20px;
+    }
+
+    .step-head {
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 10px 14px;
+      margin-bottom: 8px;
+    }
+
+    .step-head h2 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .duration {
+      border: 1px solid rgba(255, 209, 102, 0.4);
+      border-radius: 999px;
+      background: rgba(255, 209, 102, 0.12);
+      color: var(--warn);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      padding: 4px 10px;
+      white-space: nowrap;
+    }
+
+    .step p.desc {
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .tag {
+      border: 1px solid rgba(121, 255, 225, 0.22);
+      border-radius: 999px;
+      background: rgba(121, 255, 225, 0.08);
+      color: #c9fff5;
+      font-size: 13px;
+      padding: 6px 10px;
+    }
+
+    .side {
+      border-radius: 14px;
+      background: rgba(19, 26, 37, 0.88);
+      padding: 16px;
+      align-self: start;
+    }
+
+    .side-title {
+      color: var(--warn);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.13em;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    li + li {
+      margin-top: 6px;
+    }
+
+    details.detail {
+      margin-top: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 14px;
+      background: rgba(8, 12, 20, 0.55);
+      overflow: hidden;
+    }
+
+    details.detail > summary {
+      cursor: pointer;
+      list-style: none;
+      padding: 14px 18px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      user-select: none;
+    }
+
+    details.detail > summary::-webkit-details-marker {
+      display: none;
+    }
+
+    details.detail > summary::before {
+      content: "▸";
+      color: var(--accent);
+      font-size: 13px;
+      transition: transform 0.15s ease;
+    }
+
+    details.detail[open] > summary::before {
+      transform: rotate(90deg);
+    }
+
+    .detail-body {
+      padding: 4px 18px 20px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .week {
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      padding: 14px 16px;
+    }
+
+    .week h4 {
+      margin: 0 0 10px;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--line);
+    }
+
+    .done {
+      grid-column: 1 / -1;
+      border-radius: 12px;
+      padding: 14px 16px;
+      background: rgba(121, 255, 225, 0.06);
+      border: 1px solid rgba(121, 255, 225, 0.22);
+    }
+
+    .done h4 {
+      margin: 0 0 10px;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .footer-note {
+      margin-top: 34px;
+      padding: 22px 24px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius);
+      background: var(--panel);
+      color: var(--muted);
+    }
+
+    code {
+      color: var(--accent);
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 0.95em;
+    }
+
+    /* ── View navigation ── */
+    .view-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 28px;
+      padding: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .view-nav button {
+      cursor: pointer;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      background: transparent;
+      color: var(--muted);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 14px;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+
+    .view-nav button:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .view-nav button.active {
+      color: var(--text);
+      background: rgba(47, 128, 237, 0.18);
+      border-color: rgba(47, 128, 237, 0.45);
+    }
+
+    .view-nav button.ready::after {
+      content: "";
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      margin-left: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      vertical-align: middle;
+    }
+
+    .view-nav button.soon {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .view {
+      display: none;
+    }
+
+    .view.active {
+      display: block;
+    }
+
+    .step-drill {
+      margin-top: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .step-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .step-links a {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent);
+      text-decoration: none;
+      border: 1px solid rgba(121, 255, 225, 0.28);
+      border-radius: 8px;
+      padding: 5px 10px;
+      background: rgba(121, 255, 225, 0.06);
+    }
+
+    .step-links a:hover {
+      background: rgba(121, 255, 225, 0.14);
+    }
+
+    .stage-materials {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(121, 255, 225, 0.22);
+      background: rgba(121, 255, 225, 0.05);
+    }
+
+    .stage-materials a {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .stage-materials a:hover {
+      text-decoration: underline;
+    }
+
+    .stage-materials .label {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--warn);
+      margin-right: 4px;
+    }
+
+    .btn-drill {
+      cursor: pointer;
+      border: 1px solid rgba(121, 255, 225, 0.35);
+      border-radius: 10px;
+      background: rgba(121, 255, 225, 0.08);
+      color: var(--accent);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 8px 16px;
+      transition: background 0.15s;
+    }
+
+    .btn-drill:hover {
+      background: rgba(121, 255, 225, 0.16);
+    }
+
+    /* ── Stage detail page ── */
+    .stage-back {
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--muted);
+      font: inherit;
+      font-size: 14px;
+      padding: 0;
+      margin-bottom: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .stage-back:hover {
+      color: var(--accent);
+    }
+
+    .stage-hero {
+      margin-bottom: 32px;
+    }
+
+    .stage-hero h2 {
+      font-size: clamp(28px, 5vw, 42px);
+      margin: 0 0 10px;
+    }
+
+    .stage-hero .desc {
+      color: var(--muted);
+      font-size: 17px;
+      max-width: 720px;
+      margin: 0;
+    }
+
+    .stage-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 12px;
+    }
+
+    .stage-tabs button {
+      cursor: pointer;
+      border: none;
+      border-radius: 8px 8px 0 0;
+      background: transparent;
+      color: var(--muted);
+      font: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 16px;
+    }
+
+    .stage-tabs button:hover {
+      color: var(--text);
+    }
+
+    .stage-tabs button.active {
+      color: var(--accent);
+      background: rgba(121, 255, 225, 0.08);
+    }
+
+    .stage-panel {
+      display: none;
+    }
+
+    .stage-panel.active {
+      display: block;
+    }
+
+    .stage-section {
+      margin-bottom: 28px;
+    }
+
+    .stage-section h3 {
+      font-size: 18px;
+      margin: 0 0 12px;
+      color: var(--text);
+    }
+
+    .stage-section p,
+    .stage-section li {
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .stage-section ul,
+    .stage-section ol {
+      padding-left: 20px;
+    }
+
+    .stage-section li + li {
+      margin-top: 8px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .info-card {
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 16px 18px;
+    }
+
+    .info-card h4 {
+      margin: 0 0 8px;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--warn);
+    }
+
+    .info-card ul {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .pre-block {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.35);
+      padding: 16px 18px;
+      overflow-x: auto;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #c8d6ea;
+      white-space: pre;
+      margin: 12px 0;
+    }
+
+    .pre-block .dim {
+      color: #6b7a90;
+    }
+
+    .pre-block .hi {
+      color: var(--accent);
+    }
+
+    .pre-block .warn {
+      color: var(--warn);
+    }
+
+    .tree {
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+      padding: 14px 18px;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .step-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .step-item {
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.025);
+      padding: 16px 18px;
+    }
+
+    .step-item .head {
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .step-item .head b {
+      font-size: 15px;
+      color: var(--text);
+    }
+
+    .step-item .head span {
+      font-size: 12px;
+      color: var(--line);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .step-item ul {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .dod-group {
+      border: 1px solid rgba(121, 255, 225, 0.2);
+      border-radius: 14px;
+      background: rgba(121, 255, 225, 0.04);
+      padding: 16px 18px;
+      margin-bottom: 14px;
+    }
+
+    .dod-group h4 {
+      margin: 0 0 12px;
+      font-size: 14px;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+    }
+
+    .dod-group label {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 4px 0;
+    }
+
+    .dod-group input[type="checkbox"] {
+      margin-top: 3px;
+      accent-color: var(--accent);
+    }
+
+    .flow-diagram {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--muted);
+      margin: 16px 0;
+    }
+
+    .flow-diagram .node {
+      border: 1px solid rgba(47, 128, 237, 0.4);
+      border-radius: 8px;
+      background: rgba(47, 128, 237, 0.12);
+      padding: 6px 12px;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .flow-diagram .arrow {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .placeholder-stage {
+      text-align: center;
+      padding: 60px 24px;
+      color: var(--muted);
+    }
+
+    .placeholder-stage h2 {
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    @media (max-width: 780px) {
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 980px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .rail {
+        position: static;
+        order: -1;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 780px) {
+      main {
+        width: min(100% - 22px, 1120px);
+        padding-top: 36px;
+      }
+
+      .rail {
+        grid-template-columns: 1fr;
+      }
+
+      .timeline {
+        padding-left: 32px;
+      }
+
+      .timeline::before {
+        left: 13px;
+      }
+
+      .step {
+        padding: 20px;
+      }
+
+      .step::before {
+        left: -34px;
+      }
+
+      .step-top {
+        grid-template-columns: 1fr;
+      }
+
+      .detail-body {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="hero">
+      <div class="eyebrow">project-by-project implementation path</div>
+      <h1>Coding Agent Roadmap</h1>
+      <p class="lead">
+        Python-монорепо, где каждый этап заканчивается рабочим образцом: маленьким приложением,
+        библиотекой или сервисом. Следующий этап не переписывает предыдущий, а ставит его как зависимость.
+      </p>
+      <div class="meta-row">
+        <span class="meta-pill">стек: <b>Python 3.12+</b></span>
+        <span class="meta-pill"><b>8</b> этапов</span>
+        <span class="meta-pill"><b>2 недели</b> на этап</span>
+        <span class="meta-pill">≈ <b>16 недель</b> всего</span>
+        <span class="meta-pill">git-aware вынесен <b>после</b> web UI</span>
+        <span class="meta-pill"><a href="steps/README.md" style="color:inherit;text-decoration:none">материалы в <b style="color:var(--accent)">steps/</b></a></span>
+      </div>
+    </section>
+
+    <nav class="view-nav" aria-label="Навигация по этапам">
+      <button type="button" class="active" data-view="overview">Обзор</button>
+      <button type="button" class="ready" data-view="stage-1">1 · Toy Agent</button>
+      <button type="button" class="ready" data-view="stage-2">2 · Agent Core</button>
+      <button type="button" class="soon" data-view="stage-3" disabled>3 · Tool Runtime</button>
+      <button type="button" class="soon" data-view="stage-4" disabled>4 · Workspace</button>
+      <button type="button" class="soon" data-view="stage-5" disabled>5 · CLI</button>
+      <button type="button" class="soon" data-view="stage-6" disabled>6 · Server</button>
+      <button type="button" class="soon" data-view="stage-7" disabled>7 · Web UI</button>
+      <button type="button" class="soon" data-view="stage-8" disabled>8 · Git</button>
+    </nav>
+
+    <div class="layout">
+      <div class="content">
+
+    <!-- ═══════════════ OVERVIEW ═══════════════ -->
+    <div id="view-overview" class="view active">
+    <section class="timeline" aria-label="Coding agent roadmap">
+      <article class="step" data-index="1">
+        <div class="step-top">
+          <div>
+            <div class="step-head">
+              <h2>Toy Agent Playground</h2>
+              <span class="duration">2 недели</span>
+            </div>
+            <p class="desc">Агентский цикл, роли сообщений, tool calls — плюс mock model для тестов и один real provider (OpenAI-compatible), пока захардкоженный.</p>
+            <div class="tags">
+              <span class="tag">Agent Loop</span>
+              <span class="tag">Message Roles</span>
+              <span class="tag">Mock Model</span>
+              <span class="tag">OpenAI-compatible</span>
+            </div>
+          </div>
+          <aside class="side">
+            <div class="side-title">Концепции</div>
+            <ul>
+              <li>Agent Loop и run lifecycle.</li>
+              <li>Mock vs real provider.</li>
+              <li>Explicit errors, max steps.</li>
+            </ul>
+          </aside>
+        </div>
+        <details class="detail">
+          <summary>Краткий итог этапа</summary>
+          <div class="detail-body">
+            <div class="week">
+              <h4>Неделя 1 — идеи</h4>
+              <ul>
+                <li>Роли сообщений: user, assistant, tool.</li>
+                <li>Tool call как данные, не side effect.</li>
+                <li>Mock model для детерминированных тестов.</li>
+                <li>Real provider (OpenAI-compatible) — захардкоженный, для «живого» прогона.</li>
+              </ul>
+            </div>
+            <div class="week">
+              <h4>Неделя 2 — цикл</h4>
+              <ul>
+                <li>Agent Loop: решение → действие → контекст → повтор.</li>
+                <li>Переключение mock / real без изменения цикла.</li>
+                <li>Четыре сценария: happy path, unknown tool, max steps, real provider.</li>
+              </ul>
+            </div>
+            <div class="done">
+              <h4>Готово, когда</h4>
+              <ul>
+                <li>Джун объясняет все концепции своими словами.</li>
+                <li>Прототип работает и с mock, и с real provider.</li>
+                <li>Понятно, что будет на этапе 2.</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+        <div class="step-links">
+          <a href="steps/01-toy-project/README.md">README</a>
+          <a href="steps/01-toy-project/prompts/">Промпты</a>
+          <a href="steps/01-toy-project/DOD.md">DoD</a>
+          <a href="steps/01-toy-project/edge-cases.md">Edge cases</a>
+        </div>
+        <div class="step-drill">
+          <button type="button" class="btn-drill" data-view="stage-1">Подробнее →</button>
+        </div>
+      </article>
+
+      <article class="step" data-index="2">
+        <div class="step-top">
+          <div>
+            <div class="step-head">
+              <h2>Agent Core Library</h2>
+              <span class="duration">2 недели</span>
+            </div>
+            <p class="desc">Вынести агентский цикл в переиспользуемое ядро: ModelClient как контракт, поток событий, отмена run и конфиг вместо hardcode.</p>
+            <div class="tags">
+              <span class="tag">Agent Core</span>
+              <span class="tag">ModelClient</span>
+              <span class="tag">AgentEvent</span>
+              <span class="tag">RunState</span>
+            </div>
+          </div>
+          <aside class="side">
+            <div class="side-title">Концепции</div>
+            <ul>
+              <li>Protocol / Ports &amp; Adapters.</li>
+              <li>Event stream для UI.</li>
+              <li>Cancellation, env-config.</li>
+            </ul>
+          </aside>
+        </div>
+        <details class="detail">
+          <summary>Краткий итог этапа</summary>
+          <div class="detail-body">
+            <div class="week">
+              <h4>Неделя 1 — ядро</h4>
+              <ul>
+                <li>Цикл из этапа 1 → отдельная библиотека.</li>
+                <li>ModelClient: mock и real за одним контрактом.</li>
+                <li>RunState и типизированные AgentEvent.</li>
+              </ul>
+            </div>
+            <div class="week">
+              <h4>Неделя 2 — контроль</h4>
+              <ul>
+                <li>Поток событий для наблюдателей (CLI, позже web).</li>
+                <li>Отмена run, таймауты, конфиг через env.</li>
+                <li>toy_agent — тонкий клиент поверх ядра.</li>
+              </ul>
+            </div>
+            <div class="done">
+              <h4>Готово, когда</h4>
+              <ul>
+                <li>Ядро не знает про CLI, HTTP-детали, fs, web.</li>
+                <li>Mock и live провайдер взаимозаменяемы.</li>
+                <li>Run можно отменить и восстановить по событиям.</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+        <div class="step-links">
+          <a href="steps/02-agent-core/README.md">README</a>
+          <a href="steps/02-agent-core/edge-cases.md">Edge cases</a>
+        </div>
+        <div class="step-drill">
+          <button type="button" class="btn-drill" data-view="stage-2">Подробнее →</button>
+        </div>
+      </article>
+
+      <article class="step" data-index="3">
+        <div class="step-top">
+          <div>
+            <div class="step-head">
+              <h2>Tool Runtime Library</h2>
+              <span class="duration">2 недели</span>
+            </div>
+            <p class="desc">Отдельная библиотека для регистрации, валидации и безопасного исполнения инструментов.</p>
+            <div class="tags">
+              <span class="tag">packages/tool_runtime</span>
+              <span class="tag">ToolRegistry</span>
+              <span class="tag">ToolExecutor</span>
+              <span class="tag">ToolResult</span>
+            </div>
+          </div>
+          <aside class="side">
+            <div class="side-title">Demo</div>
+            <ul>
+              <li>Calculator tool.</li>
+              <li>Search-memory tool.</li>
+              <li>Invalid schema показывает ошибку.</li>
+            </ul>
+          </aside>
+        </div>
+        <details class="detail">
+          <summary>Что должно быть на выходе</summary>
+          <div class="detail-body">
+            <div class="week">
+              <h4>Неделя 1 — реестр и контракты</h4>
+              <ul>
+                <li><code>ToolRegistry</code> + схемы входа на <code>pydantic</code>.</li>
+                <li>Валидация входа до вызова инструмента.</li>
+                <li>Контракт <code>ToolResult</code>: <code>ok</code> / <code>error</code>.</li>
+              </ul>
+            </div>
+            <div class="week">
+              <h4>Неделя 2 — исполнитель и edge cases</h4>
+              <ul>
+                <li><code>ToolExecutor</code>: timeout, обрезка большого output.</li>
+                <li>Unknown tool, параллельный запуск через <code>asyncio.gather</code>.</li>
+                <li>Тест на каждый edge case из чеклиста.</li>
+              </ul>
+            </div>
+            <div class="done">
+              <h4>Готово, когда</h4>
+              <ul>
+                <li><code>agent_core</code> вызывает инструменты через <code>tool_runtime</code>.</li>
+                <li>Demo с calculator и memory работает из коробки.</li>
+                <li>Ошибки инструментов структурированы, не роняют run.</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+        <div class="step-links">
+          <a href="steps/03-tool-runtime/README.md">README</a>
+          <a href="steps/03-tool-runtime/edge-cases.md">Edge cases</a>
+        </div>
+      </article>
+
+      <article class="step" data-index="4">
+        <div class="step-top">
+          <div>
+            <div class="step-head">
+              <h2>Workspace Tools Library</h2>
+              <span class="duration">2 недели</span>
+            </div>
+            <p class="desc">Файлы, поиск, patch, shell и базовые policy собираются в набор инструментов для реального проекта.</p>
+            <div class="tags">
+              <span class="tag">packages/workspace_tools</span>
+              <span class="tag">FileService</span>
+              <span class="tag">ShellService</span>
+              <span class="tag">ApprovalPolicy</span>
+            </div>
+          </div>
+          <aside class="side">
+            <div class="side-title">Must Have</div>
+            <ul>
+              <li>Workspace root sandbox.</li>
+              <li>Hash check перед записью.</li>
+              <li>Timeout для shell-команд.</li>
+            </ul>
+          </aside>
+        </div>
+        <details class="detail">
+          <summary>Что должно быть на выходе</summary>
+          <div class="detail-body">
+            <div class="week">
+              <h4>Неделя 1 — файлы и sandbox</h4>
+              <ul>
+                <li>Workspace на <code>pathlib</code>: <code>resolve()</code>, запрет traversal.</li>
+                <li><code>FileService</code>: <code>read</code> / <code>list</code>.</li>
+                <li><code>FileSnapshot</code> + <code>hashlib</code> содержимого.</li>
+              </ul>
+            </div>
+            <div class="week">
+              <h4>Неделя 2 — запись и shell</h4>
+              <ul>
+                <li><code>write</code> / <code>apply_patch</code> с проверкой hash.</li>
+                <li><code>ShellService</code> на <code>asyncio.subprocess</code>: cwd, timeout, max output, kill.</li>
+                <li>Тесты: stale write, path traversal, зависший процесс.</li>
+              </ul>
+            </div>
+            <div class="done">
+              <h4>Готово, когда</h4>
+              <ul>
+                <li>Набор tools поверх <code>tool_runtime</code> работает на реальной папке.</li>
+                <li>Запись отклоняется, если файл изменился (stale hash).</li>
+                <li>Команда вне workspace и зависший процесс безопасно блокируются.</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+        <div class="step-links">
+          <a href="steps/04-workspace-tools/README.md">README</a>
+          <a href="steps/04-workspace-tools/edge-cases.md">Edge cases</a>
+        </div>
+      </article>
+
+      <article class="step" data-index="5">
+        <div class="step-top">
+          <div>
+            <div class="step-head">
+              <h2>Coding CLI App</h2>
+              <span class="duration">2 недели</span>
+            </div>
+            <p class="desc">Первый полноценный продукт: терминальный coding agent поверх core, tool_runtime и workspace.</p>
+            <div class="tags">
+              <span class="tag">apps/coding_cli</span>
+              <span class="tag">Typer + Rich</span>
+              <span class="tag">SessionStore</span>
+              <span class="tag">Approvals</span>
+            </div>
+          </div>
+          <aside class="side">
+            <div class="side-title">Working Sample</div>
+            <ul>
+              <li>Задать задачу из терминала.</li>
+              <li>Увидеть tool timeline.</li>
+              <li>Подтвердить file write или shell.</li>
+            </ul>
+          </aside>
+        </div>
+        <details class="detail">
+          <summary>Что должно быть на выходе</summary>
+          <div class="detail-body">
+            <div class="week">
+              <h4>Неделя 1 — рендер и конфиг</h4>
+              <ul>
+                <li>ModelClient из этапа 2; провайдер через env, не hardcode.</li>
+                <li>Сборка core + tool_runtime + workspace в одном app (<code>Typer</code>).</li>
+                <li>Рендер событий со стримингом через <code>rich</code>.</li>
+              </ul>
+            </div>
+            <div class="week">
+              <h4>Неделя 2 — approvals и сессии</h4>
+              <ul>
+                <li>Approval на запись файла и shell-команды.</li>
+                <li>Отмена run по Ctrl+C (<code>KeyboardInterrupt</code> → graceful cancel).</li>
+                <li><code>SessionStore</code> + resume, конфиг (модель, режим approve).</li>
+              </ul>
+            </div>
+            <div class="done">
+              <h4>Готово, когда</h4>
+              <ul>
+                <li>Агент выполняет реальную задачу в настоящем репозитории.</li>
+                <li>Видно timeline инструментов и запросы на подтверждение.</li>
+                <li>Сессию можно прервать и продолжить позже.</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+        <div class="step-links">
+          <a href="steps/05-coding-cli/README.md">README</a>
+          <a href="steps/05-coding-cli/edge-cases.md">Edge cases</a>
+        </div>
+      </article>
+
+      <article class="step" data-index="6">
+        <div class="step-top">
+          <div>
+            <div class="step-head">
+              <h2>Agent Server</h2>
+              <span class="duration">2 недели</span>
+            </div>
+            <p class="desc">Обернуть тот же runtime в backend API: runs, events, cancellation, approvals и session persistence.</p>
+            <div class="tags">
+              <span class="tag">apps/agent_server</span>
+              <span class="tag">FastAPI</span>
+              <span class="tag">RunController</span>
+              <span class="tag">Persistence</span>
+            </div>
+          </div>
+          <aside class="side">
+            <div class="side-title">API</div>
+            <ul>
+              <li><code>POST /runs</code></li>
+              <li><code>GET /runs/:id/events</code></li>
+              <li><code>POST /approvals/:id</code></li>
+            </ul>
+          </aside>
+        </div>
+        <details class="detail">
+          <summary>Что должно быть на выходе</summary>
+          <div class="detail-body">
+            <div class="week">
+              <h4>Неделя 1 — runs и стриминг</h4>
+              <ul>
+                <li><code>FastAPI</code> + <code>RunController</code> поверх того же <code>agent_core</code>.</li>
+                <li><code>POST /runs</code>, <code>GET /runs/:id</code>.</li>
+                <li>SSE-поток <code>GET /runs/:id/events</code> (<code>sse-starlette</code>).</li>
+              </ul>
+            </div>
+            <div class="week">
+              <h4>Неделя 2 — контроль и persistence</h4>
+              <ul>
+                <li>Cancel и approvals через endpoints.</li>
+                <li>Хранилище на <code>SQLite</code> для сессий и событий.</li>
+                <li>Reconnect / replay событий по cursor.</li>
+              </ul>
+            </div>
+            <div class="done">
+              <h4>Готово, когда</h4>
+              <ul>
+                <li>Тот же агент гоняется через <code>curl</code> по HTTP.</li>
+                <li>События переживают переподключение клиента.</li>
+                <li>Approval и cancel работают без перезапуска процесса.</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+        <div class="step-links">
+          <a href="steps/06-agent-server/README.md">README</a>
+          <a href="steps/06-agent-server/edge-cases.md">Edge cases</a>
+        </div>
+      </article>
+
+      <article class="step" data-index="7">
+        <div class="step-top">
+          <div>
+            <div class="step-head">
+              <h2>OpenCode-Style Web UI</h2>
+              <span class="duration">2 недели</span>
+            </div>
+            <p class="desc">Интерфейс в браузере: чат, timeline, tool details, approvals, diff viewer, terminal output и reconnect.</p>
+            <div class="tags">
+              <span class="tag">apps/web</span>
+              <span class="tag">Chat</span>
+              <span class="tag">Timeline</span>
+              <span class="tag">DiffViewer</span>
+            </div>
+          </div>
+          <aside class="side">
+            <div class="side-title">Acceptance</div>
+            <ul>
+              <li>Запуск run из браузера.</li>
+              <li>Live stream событий.</li>
+              <li>Approval без перезапуска run.</li>
+            </ul>
+          </aside>
+        </div>
+        <details class="detail">
+          <summary>Что должно быть на выходе</summary>
+          <div class="detail-body">
+            <div class="week">
+              <h4>Неделя 1 — чат и live timeline</h4>
+              <ul>
+                <li><code>apps/web</code> (SPA), список сессий, окно чата.</li>
+                <li>Подписка на SSE из <code>agent_server</code>, рендер message/tool событий.</li>
+                <li>Состояние run: running / waiting / done / failed.</li>
+              </ul>
+            </div>
+            <div class="week">
+              <h4>Неделя 2 — детали и интерактив</h4>
+              <ul>
+                <li>Tool details, approval prompt прямо в UI.</li>
+                <li>Diff viewer по снапшотам (до/после правки) и terminal panel.</li>
+                <li>Reconnect и восстановление state после закрытия вкладки.</li>
+              </ul>
+            </div>
+            <div class="done">
+              <h4>Готово, когда</h4>
+              <ul>
+                <li>Run запускается и стримится из браузера в реальном времени.</li>
+                <li>Diff и вывод команд читаемо отрисованы.</li>
+                <li>Approve/cancel работают, run переживает reconnect.</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+        <div class="step-links">
+          <a href="steps/07-web-ui/README.md">README</a>
+          <a href="steps/07-web-ui/edge-cases.md">Edge cases</a>
+        </div>
+      </article>
+
+      <article class="step" data-index="8">
+        <div class="step-top">
+          <div>
+            <div class="step-head">
+              <h2>Git-Aware Agent</h2>
+              <span class="duration">2 недели</span>
+            </div>
+            <p class="desc">Enhancement поверх готового продукта: понимание git и безопасные коммиты — сразу в CLI и web.</p>
+            <div class="tags">
+              <span class="tag">packages/git_tools</span>
+              <span class="tag">GitService</span>
+              <span class="tag">ChangeSet</span>
+              <span class="tag">CommitFlow</span>
+            </div>
+          </div>
+          <aside class="side">
+            <div class="side-title">Demo Scenario</div>
+            <ul>
+              <li>Агент меняет файл.</li>
+              <li>Показывает git diff.</li>
+              <li>Коммитит только свои изменения.</li>
+            </ul>
+          </aside>
+        </div>
+        <details class="detail">
+          <summary>Что должно быть на выходе</summary>
+          <div class="detail-body">
+            <div class="week">
+              <h4>Неделя 1 — read-only git</h4>
+              <ul>
+                <li><code>GitService</code> поверх <code>git</code> CLI (<code>subprocess</code>): status / diff / branch.</li>
+                <li><code>ChangeSet</code>: что именно правил агент.</li>
+                <li>Интеграция в CLI и web: diff viewer переключается на git diff.</li>
+              </ul>
+            </div>
+            <div class="week">
+              <h4>Неделя 2 — безопасные коммиты</h4>
+              <ul>
+                <li>Stage + commit только своих файлов.</li>
+                <li>Обработка pre-commit hook и dirty tree.</li>
+                <li>Предупреждения о чужих незакоммиченных изменениях.</li>
+              </ul>
+            </div>
+            <div class="done">
+              <h4>Готово, когда</h4>
+              <ul>
+                <li>Агент показывает реальный git diff в обоих интерфейсах.</li>
+                <li>Коммит не затрагивает чужие изменения.</li>
+                <li>Hook-фейлы и dirty tree обрабатываются явно.</li>
+              </ul>
+            </div>
+          </div>
+        </details>
+        <div class="step-links">
+          <a href="steps/08-git-aware/README.md">README</a>
+          <a href="steps/08-git-aware/edge-cases.md">Edge cases</a>
+        </div>
+      </article>
+    </section>
+
+    <section class="footer-note">
+      <strong>Структура обучения:</strong> Python-монорепо (<code>uv workspace</code>), где каждый stage публикует
+      пакет или приложение с понятным API, демо-сценарием и тестами на <code>pytest</code>.
+      Workspace идёт рано (фундамент для CLI и web), а git-aware вынесен в конец как enhancement поверх UI.
+      <code>agent_core</code> остаётся независимым от интерфейсов, а CLI и web становятся клиентами одного runtime.
+      Edge cases по этапам — в <code>steps/*/edge-cases.md</code>, индекс: <a href="docs/agent-edge-cases.md">docs/agent-edge-cases.md</a>.
+      Материалы и промпты: <a href="steps/README.md">steps/</a>.
+    </section>
+    </div><!-- /view-overview -->
+
+    <!-- ═══════════════ STAGE 1 DETAIL ═══════════════ -->
+    <div id="view-stage-1" class="view">
+      <button type="button" class="stage-back" data-view="overview">← Назад к обзору</button>
+
+      <header class="stage-hero">
+        <div class="eyebrow">этап 1 · 2 недели</div>
+        <h2>Toy Agent Playground</h2>
+        <p class="desc">
+          Знакомство с базовыми концепциями coding agent: агентский цикл, роли сообщений,
+          вызов инструментов и завершение задачи. Два источника модели: mock для тестов
+          и один real provider (OpenAI-compatible) — пока захардкоженный.
+        </p>
+        <div class="stage-materials">
+          <span class="label">Материалы:</span>
+          <a href="steps/01-toy-project/README.md">README</a>
+          <a href="steps/01-toy-project/prompts/">Промпты</a>
+          <a href="steps/01-toy-project/DOD.md">DoD</a>
+          <a href="steps/01-toy-project/edge-cases.md">Edge cases</a>
+        </div>
+      </header>
+
+      <nav class="stage-tabs" aria-label="Разделы этапа">
+        <button type="button" class="active" data-panel="review">Обзор этапа</button>
+        <button type="button" data-panel="example">Как это работает</button>
+        <button type="button" data-panel="steps">Прогресс изучения</button>
+        <button type="button" data-panel="dod">Definition of Done</button>
+      </nav>
+
+      <!-- ── Panel: Review ── -->
+      <div data-panel="review" class="stage-panel active">
+        <div class="info-grid">
+          <div class="info-card">
+            <h4>Зачем этот этап</h4>
+            <ul>
+              <li>Понять агент как <strong>цикл с явными состояниями</strong>, а не как «магию LLM».</li>
+              <li>Увидеть разницу между «модель думает» и «агент действует».</li>
+              <li>Заложить модель, которую все следующие этапы будут расширять, а не переписывать.</li>
+            </ul>
+          </div>
+          <div class="info-card">
+            <h4>Чего здесь НЕ делаем</h4>
+            <ul>
+              <li>Нет переключения между несколькими провайдерами — один, захардкоженный.</li>
+              <li>Нет конфигурации через env / dotenv — ключ и URL прямо в коде (осознанный костыль).</li>
+              <li>Нет файловой системы, shell, git.</li>
+              <li>Нет web UI, persistence, approvals.</li>
+              <li>Нет отдельных библиотек — только минимальный прототип для обучения.</li>
+            </ul>
+          </div>
+        </div>
+
+        <section class="stage-section">
+          <h3>Концепции этапа</h3>
+          <div class="step-list">
+            <div class="step-item">
+              <div class="head"><b>Agent Loop</b><span>ядро</span></div>
+              <p style="margin:0;color:var(--muted);font-size:14px">
+                Повторяющийся цикл: получить решение модели → выполнить действие → добавить результат в контекст → повторить.
+                Имеет лимит шагов и явное завершение.
+              </p>
+            </div>
+            <div class="step-item">
+              <div class="head"><b>Conversation &amp; Message Roles</b><span>контекст</span></div>
+              <p style="margin:0;color:var(--muted);font-size:14px">
+                Диалог состоит из сообщений с ролями: пользователь задаёт задачу, ассистент принимает решения,
+                инструмент возвращает результат действия. История сообщений — память агента на время run.
+              </p>
+            </div>
+            <div class="step-item">
+              <div class="head"><b>Tool Call</b><span>действие</span></div>
+              <p style="margin:0;color:var(--muted);font-size:14px">
+                Запрос на выполнение действия: имя инструмента + аргументы. Tool call — это данные, не side effect.
+                Агент решает вызвать tool, runtime его исполняет и возвращает результат.
+              </p>
+            </div>
+            <div class="step-item">
+              <div class="head"><b>Final Answer vs Tool Call</b><span>развилка</span></div>
+              <p style="margin:0;color:var(--muted);font-size:14px">
+                На каждом шаге модель выбирает одно из двух: вызвать инструмент или дать финальный ответ пользователю.
+                Это ключевое решение агентского цикла.
+              </p>
+            </div>
+            <div class="step-item">
+              <div class="head"><b>Mock Model</b><span>тесты</span></div>
+              <p style="margin:0;color:var(--muted);font-size:14px">
+                Подмена реальной LLM заранее заданными ответами. Детерминированные тесты, edge cases,
+                работа без сети и API-ключей. Основной режим для pytest.
+              </p>
+            </div>
+            <div class="step-item">
+              <div class="head"><b>Real Provider (OpenAI-compatible)</b><span>живой прогон</span></div>
+              <p style="margin:0;color:var(--muted);font-size:14px">
+                Один реальный провайдер с OpenAI-compatible API (OpenAI, OpenRouter, локальный vLLM/Ollama с
+                совместимым endpoint). Пока захардкожены: base URL, API key, имя модели. Agent Loop не знает
+                разницы — получает то же решение «tool call или final answer», что и от mock.
+              </p>
+            </div>
+            <div class="step-item">
+              <div class="head"><b>Mock vs Real — зачем оба</b><span>практика</span></div>
+              <p style="margin:0;color:var(--muted);font-size:14px">
+                Mock — для обучения и тестов. Real — чтобы увидеть, как модель сама выбирает tools на живой задаче.
+                Цикл один и тот же; меняется только источник ответа модели. На этапе 2 это станет Protocol.
+              </p>
+            </div>
+            <div class="step-item">
+              <div class="head"><b>Run Lifecycle</b><span>состояние</span></div>
+              <p style="margin:0;color:var(--muted);font-size:14px">
+                Каждый run проходит через состояния: running → completed / failed / max_steps.
+                Состояние должно быть явным и наблюдаемым.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="stage-section">
+          <h3>Паттерны, которые закрепляем</h3>
+          <ul>
+            <li><strong>State Machine</strong> — run имеет конечные состояния, переходы между ними предсказуемы.</li>
+            <li><strong>Command</strong> — tool call описывает намерение, исполнение отделено от решения.</li>
+            <li><strong>Explicit Errors</strong> — ошибка инструмента возвращается в контекст, а не роняет весь run.</li>
+          </ul>
+        </section>
+
+        <section class="stage-section">
+          <h3>Архитектура (концептуально)</h3>
+          <div class="flow-diagram">
+            <span class="node">User input</span>
+            <span class="arrow">→</span>
+            <span class="node">Agent Loop</span>
+            <span class="arrow">→</span>
+            <span class="node">Model</span>
+            <span class="arrow">↔</span>
+            <span class="node">Mock | Real</span>
+            <span class="arrow">→</span>
+            <span class="node">Tool call?</span>
+            <span class="arrow">→</span>
+            <span class="node">Tool</span>
+            <span class="arrow">→</span>
+            <span class="node">повтор</span>
+            <span class="arrow">→</span>
+            <span class="node">Final answer</span>
+          </div>
+          <p>
+            Agent Loop держит историю сообщений и на каждом шаге спрашивает модель: «что дальше?»
+            Источник ответа — mock (скрипт) или real provider (HTTP к OpenAI-compatible API).
+            Модель либо просит вызвать инструмент, либо даёт финальный ответ. Результат инструмента
+            добавляется в историю, и цикл продолжается.
+          </p>
+          <p>
+            <strong>Hardcode на этом этапе:</strong> base URL, API key и model name зашиты в коде real provider.
+            Переключение mock / real — флагом при запуске (например, <code>--mock</code> vs <code>--live</code>).
+            Это сознательно грубо: на этапе 2 вынесем за Protocol и конфиг.
+          </p>
+        </section>
+      </div>
+
+      <!-- ── Panel: Example ── -->
+      <div data-panel="example" class="stage-panel">
+        <section class="stage-section">
+          <h3>Сценарий: happy path (mock)</h3>
+          <p><strong>Режим:</strong> mock model · <strong>Задача:</strong> «Сложи 2 и 3, потом скажи текущее время»</p>
+          <ol>
+            <li>Пользователь отправляет задачу → она становится первым сообщением в истории.</li>
+            <li>Модель решает вызвать инструмент «сложение» с аргументами 2 и 3.</li>
+            <li>Инструмент возвращает 5 → результат добавляется в историю.</li>
+            <li>Модель видит результат и решает вызвать инструмент «текущее время».</li>
+            <li>Инструмент возвращает timestamp → результат добавляется в историю.</li>
+            <li>Модель формирует финальный ответ: «Sum is 5. Current time is …»</li>
+            <li>Run завершается со статусом <strong>completed</strong>, потрачено 3 шага.</li>
+          </ol>
+        </section>
+
+        <section class="stage-section">
+          <h3>Сценарий: unknown tool</h3>
+          <p><strong>Задача:</strong> модель просит инструмент, которого нет.</p>
+          <ol>
+            <li>Модель запрашивает несуществующий инструмент.</li>
+            <li>Runtime не падает — возвращает ошибку «unknown tool» в историю сообщений.</li>
+            <li>Модель видит ошибку и может скорректировать поведение.</li>
+            <li>Модель даёт финальный ответ: «Sorry, I don't have a tool for that.»</li>
+            <li>Run завершается со статусом <strong>completed</strong> — ошибка tool не равна падению run.</li>
+          </ol>
+        </section>
+
+        <section class="stage-section">
+          <h3>Сценарий: max steps</h3>
+          <p><strong>Задача:</strong> модель зациклилась и бесконечно просит инструменты.</p>
+          <ol>
+            <li>На каждом шаге модель снова и снова вызывает один и тот же инструмент.</li>
+            <li>Agent Loop считает шаги.</li>
+            <li>При достижении лимита (например, 3) run принудительно останавливается.</li>
+            <li>Статус: <strong>max_steps</strong> — это защита от бесконечного цикла.</li>
+          </ol>
+        </section>
+
+        <section class="stage-section">
+          <h3>Сценарий: real provider (live)</h3>
+          <p><strong>Режим:</strong> OpenAI-compatible provider, захардкоженный · <strong>Задача:</strong> «What is 17 + 25? Use the calculator tool.»</p>
+          <ol>
+            <li>Пользователь запускает агент с флагом live (не mock).</li>
+            <li>Agent Loop отправляет историю сообщений + описание доступных tools в real API.</li>
+            <li>Модель сама решает вызвать tool «add» с аргументами 17 и 25 — без скрипта.</li>
+            <li>Runtime выполняет tool, результат 42 попадает в историю.</li>
+            <li>Модель получает обновлённый контекст и формирует финальный ответ пользователю.</li>
+            <li>Run завершается со статусом <strong>completed</strong>.</li>
+          </ol>
+          <p>
+            Отличие от mock: порядок и формулировки решает модель, ответы недетерминированы.
+            Поэтому live-прогоны не входят в автотесты — только ручная проверка и демо ментору.
+          </p>
+        </section>
+
+        <section class="stage-section">
+          <h3>Сценарий: real provider — сеть недоступна</h3>
+          <p><strong>Режим:</strong> live · API не отвечает или ключ неверный.</p>
+          <ol>
+            <li>Agent Loop вызывает real provider → получает ошибку (timeout, 401, 429).</li>
+            <li>Run завершается со статусом <strong>failed</strong>, ошибка видна пользователю.</li>
+            <li>Run не зависает бесконечно — нужен timeout на запрос к API.</li>
+          </ol>
+          <p>
+            Джун понимает: mock покрывает логику цикла, real provider добавляет класс ошибок «внешний мир».
+          </p>
+        </section>
+
+        <section class="stage-section">
+          <h3>Что важно понять из примеров</h3>
+          <ul>
+            <li>Агент — это не один ответ модели, а <strong>цепочка шагов</strong>.</li>
+            <li>Каждый шаг добавляет информацию в контекст для следующего решения.</li>
+            <li>Ошибки инструментов — часть диалога, а не крах системы.</li>
+            <li>Лимит шагов — обязательная страховка, без неё агент может крутиться вечно.</li>
+            <li><strong>Mock и real используют один и тот же Agent Loop</strong> — меняется только источник модели.</li>
+            <li>Live-прогоны недетерминированы; тесты всегда на mock.</li>
+          </ul>
+        </section>
+      </div>
+
+      <!-- ── Panel: Steps ── -->
+      <div data-panel="steps" class="stage-panel">
+        <section class="stage-section">
+          <h3>Неделя 1 — фундаментальные идеи</h3>
+          <div class="step-list">
+            <div class="step-item">
+              <div class="head"><b>Дни 1–2</b><span>Модель диалога</span></div>
+              <ul>
+                <li>Чем отличаются роли user, assistant, tool.</li>
+                <li>Зачем агенту история сообщений, а не один prompt.</li>
+                <li>Что такое tool call и чем он отличается от финального ответа.</li>
+              </ul>
+            </div>
+            <div class="step-item">
+              <div class="head"><b>Дни 3–4</b><span>Mock model</span></div>
+              <ul>
+                <li>Зачем mock на этапе обучения и в тестах.</li>
+                <li>Как скриптованные ответы делают поведение предсказуемым.</li>
+                <li>Edge cases без сети: unknown tool, max steps.</li>
+              </ul>
+            </div>
+            <div class="step-item">
+              <div class="head"><b>День 5</b><span>Real provider</span></div>
+              <ul>
+                <li>Что такое OpenAI-compatible API (chat completions + tool calls).</li>
+                <li>Захардкоженные base URL, API key, model — осознанный костыль этапа 1.</li>
+                <li>Один HTTP-вызов: история сообщений in → tool call или final answer out.</li>
+                <li>Timeout и обработка ошибок сети / 401 / 429.</li>
+              </ul>
+            </div>
+            <div class="step-item">
+              <div class="head"><b>День 6</b><span>Инструменты</span></div>
+              <ul>
+                <li>Инструмент как контракт: имя + вход → результат.</li>
+                <li>Описание tools передаётся в API — модель выбирает сама.</li>
+                <li>Unknown tool — ошибка в контексте, не exception.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="stage-section">
+          <h3>Неделя 2 — цикл и завершение</h3>
+          <div class="step-list">
+            <div class="step-item">
+              <div class="head"><b>Дни 7–8</b><span>Agent Loop</span></div>
+              <ul>
+                <li>Цикл: решение → действие → контекст → повтор.</li>
+                <li>Переключение mock / live одним флагом — цикл не меняется.</li>
+                <li>Run lifecycle: completed, failed, max_steps.</li>
+              </ul>
+            </div>
+            <div class="step-item">
+              <div class="head"><b>Дни 9</b><span>Наблюдаемость</span></div>
+              <ul>
+                <li>На каждом шаге видно: номер, источник (mock/live), tool или final answer.</li>
+                <li>Разница между «агент думает» и «агент выполняет tool».</li>
+              </ul>
+            </div>
+            <div class="step-item">
+              <div class="head"><b>День 10</b><span>Закрепление</span></div>
+              <ul>
+                <li>Mock: happy path, unknown tool, max steps (автотесты).</li>
+                <li>Live: одна задача с real provider — демо ментору.</li>
+                <li>Устное объяснение: зачем mock и real одновременно.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- ── Panel: DoD ── -->
+      <div data-panel="dod" class="stage-panel">
+        <section class="stage-section">
+          <h3>Definition of Done — Этап 1: Toy Agent Playground</h3>
+          <p>
+            Этап завершён, когда джун <strong>понимает и может объяснить</strong> все концепции ниже,
+            а прототип демонстрирует описанное поведение. Ментор проверяет каждый пункт.
+          </p>
+        </section>
+
+        <div class="dod-group">
+          <h4>💬 Модель диалога</h4>
+          <label><input type="checkbox"> Джун объясняет, зачем агенту три роли сообщений: user, assistant, tool</label>
+          <label><input type="checkbox"> Джун объясняет, чем сообщение ассистента «хочу вызвать tool» отличается от сообщения tool «вот результат»</label>
+          <label><input type="checkbox"> Джун понимает, что история сообщений — это контекст для следующего решения модели</label>
+          <label><input type="checkbox"> Прототип сохраняет полную историю диалога за run</label>
+        </div>
+
+        <div class="dod-group">
+          <h4>🔄 Agent Loop</h4>
+          <label><input type="checkbox"> Джун может описать цикл своими словами: решение → действие → обновление контекста → повтор</label>
+          <label><input type="checkbox"> Прототип на каждом шаге спрашивает модель «что дальше?»</label>
+          <label><input type="checkbox"> Если модель просит tool — tool выполняется, результат попадает в историю</label>
+          <label><input type="checkbox"> Если модель даёт финальный ответ — run завершается</label>
+          <label><input type="checkbox"> При достижении лимита шагов run останавливается со статусом max_steps, не падая</label>
+        </div>
+
+        <div class="dod-group">
+          <h4>🔧 Tool Call</h4>
+          <label><input type="checkbox"> Джун объясняет: tool call — это данные (имя + аргументы), а не немедленное действие</label>
+          <label><input type="checkbox"> Джун объясняет разницу между «модель решила вызвать tool» и «runtime выполнил tool»</label>
+          <label><input type="checkbox"> Прототип имеет минимум 2–3 mock-инструмента с понятным поведением</label>
+          <label><input type="checkbox"> Unknown tool возвращает ошибку в контекст, run продолжается</label>
+        </div>
+
+        <div class="dod-group">
+          <h4>🤖 Mock Model</h4>
+          <label><input type="checkbox"> Джун объясняет, зачем mock нужен для тестов и edge cases</label>
+          <label><input type="checkbox"> Mock возвращает предсказуемые ответы (не random, не network)</label>
+          <label><input type="checkbox"> Автотесты покрывают: happy path, unknown tool, max steps — только на mock</label>
+        </div>
+
+        <div class="dod-group">
+          <h4>🌐 Real Provider (OpenAI-compatible)</h4>
+          <label><input type="checkbox"> Подключён один провайдер с OpenAI-compatible chat API (OpenAI / OpenRouter / локальный endpoint)</label>
+          <label><input type="checkbox"> Base URL, API key и model name захардкожены в коде — осознанно, без env на этом этапе</label>
+          <label><input type="checkbox"> В live-режиме модель сама выбирает tool call или final answer (без скрипта)</label>
+          <label><input type="checkbox"> Описание доступных tools передаётся в API вместе с историей сообщений</label>
+          <label><input type="checkbox"> Timeout на HTTP-запрос; при ошибке сети / 401 / 429 run → status failed, не зависает</label>
+          <label><input type="checkbox"> Переключение mock / live одним флагом; Agent Loop не меняется между режимами</label>
+          <label><input type="checkbox"> Live-прогон с простой задачей (calculator) успешно продемонстрирован ментору</label>
+          <label><input type="checkbox"> Джун объясняет: почему live не пишем в pytest (недетерминизм, cost, network)</label>
+        </div>
+
+        <div class="dod-group">
+          <h4>📊 Run Lifecycle</h4>
+          <label><input type="checkbox"> Джун перечисляет возможные финальные статусы: completed, failed, max_steps</label>
+          <label><input type="checkbox"> Джун объясняет, зачем нужен лимит шагов и что будет без него</label>
+          <label><input type="checkbox"> Прототип явно показывает текущий статус и количество пройденных шагов</label>
+        </div>
+
+        <div class="dod-group">
+          <h4>👁 Наблюдаемость</h4>
+          <label><input type="checkbox"> На каждом шаге видно: номер шага, что решила модель, результат или ошибка</label>
+          <label><input type="checkbox"> Финальный ответ пользователю отделён от промежуточных tool-шагов</label>
+          <label><input type="checkbox"> По логу run можно восстановить, что агент делал и почему</label>
+        </div>
+
+        <div class="dod-group">
+          <h4>🎓 Понимание (устная проверка ментором)</h4>
+          <label><input type="checkbox"> «Чем агент отличается от chatbot?» — джун отвечает через цикл и tool calls</label>
+          <label><input type="checkbox"> «Что произойдёт, если tool упадёт?» — ошибка в контекст, не крах run</label>
+          <label><input type="checkbox"> «Что изменится на этапе 2?» — цикл и оба источника модели вынесут за ModelClient Protocol, hardcode уйдёт в конфиг</label>
+          <label><input type="checkbox"> «Зачем mock, если есть API?» — детерминизм, скорость, cost, тесты без сети</label>
+          <label><input type="checkbox"> «Почему hardcode ключ на этапе 1?» — минимум отвлечений; на этапе 2+ env и безопасность</label>
+        </div>
+      </div>
+    </div><!-- /view-stage-1 -->
+
+    <!-- ═══════════════ STAGE 2 DETAIL ═══════════════ -->
+    <div id="view-stage-2" class="view">
+      <button type="button" class="stage-back" data-view="overview">← Назад к обзору</button>
+
+      <header class="stage-hero">
+        <div class="eyebrow">этап 2 · 2 недели</div>
+        <h2>Agent Core Library</h2>
+        <p class="desc">
+          Вынести агентский цикл из прототипа в переиспользуемое ядро. Mock и real provider — за одним контрактом
+          ModelClient. Появляется поток событий, отмена run и конфиг вместо hardcode. CLI и web станут клиентами этого ядра.
+        </p>
+        <div class="stage-materials">
+          <span class="label">Материалы:</span>
+          <a href="steps/02-agent-core/README.md">README</a>
+          <a href="steps/02-agent-core/edge-cases.md">Edge cases</a>
+          <a href="steps/README.md">Все шаги</a>
+        </div>
+      </header>
+
+      <nav class="stage-tabs" aria-label="Разделы этапа">
+        <button type="button" class="active" data-panel="review">Обзор этапа</button>
+        <button type="button" data-panel="example">Как это работает</button>
+        <button type="button" data-panel="steps">Прогресс изучения</button>
+        <button type="button" data-panel="dod">Definition of Done</button>
+      </nav>
+
+      <!-- ── Panel: Review ── -->
+      <div data-panel="review" class="stage-panel active">
+        <div class="info-grid">
+          <div class="info-card">
+            <h4>Зачем этот этап</h4>
+            <ul>
+              <li>Цикл из этапа 1 перестаёт жить внутри одного приложения — становится <strong>библиотекой</strong>.</li>
+              <li>Mock и real provider объединяются за <strong>одним контрактом</strong>, hardcode уходит.</li>
+              <li>Закладывается <strong>поток событий</strong> — фундамент для CLI, server и web UI.</li>
+              <li>Джун учится <strong>Dependency Inversion</strong>: ядро не зависит от деталей реализации.</li>
+            </ul>
+          </div>
+          <div class="info-card">
+            <h4>Чего здесь НЕ делаем</h4>
+            <ul>
+              <li>Нет отдельного tool runtime — tools по-прежнему передаются снаружи (упрощённо).</li>
+              <li>Нет filesystem, shell, git, approvals.</li>
+              <li>Нет HTTP-сервера и web UI — только библиотека + тонкий клиент.</li>
+              <li>Нет streaming токенов от LLM — только события уровня шага/run.</li>
+            </ul>
+          </div>
+        </div>
+
+        <section class="stage-section">
+          <h3>Концепции этапа</h3>
+          <div class="step-list">
+            <div class="step-item">
+              <div class="head"><b>Agent Core</b><span>библиотека</span></div>
+              <p style="margin:0;color:var(--muted);font-size:14px">
+                Переиспользуемый runtime: цикл, состояние run, события. Не знает, кто его вызывает — CLI, тест или server.
+                Единственная ответственность: провести run от user input до финального статуса.
+              </p>
+            </div>
+            <div class="step-item">
+              <div class="head"><b>ModelClient (Protocol)</b><span>порт</span></div>
+              <p style="margin:0;color:var(--muted);font-size:14px">
+                Контракт «дай историю сообщений → верни tool call или final answer». Mock и OpenAI-compatible
+                реализуют один интерфейс. Agent Core зависит от Protocol, не от HTTP или скриптов.
+              </p>
+            </div>
+            <div class="step-item">
+              <div class="head"><b>Dependency Injection</b><span>сборка</span></div>
+              <p style="margin:0;color:var(--muted);font-size:14px">
+                ModelClient и tools передаются в агент при создании. Ядро не создаёт провайдер само —
+                это делает клиент (toy_agent, позже CLI). Меняешь провайдер — ядро не трогаешь.
+              </p>
+            </div>
+            <div class="step-item">
+              <div class="head"><b>RunState</b><span>состояние</span></div>
+              <p style="margin:0;color:var(--muted);font-size:14px">
+                Явная машина состояний run: pending → running → completed / failed / cancelled / max_steps.
+                Любой наблюдатель может спросить «в каком состоянии run прямо сейчас».
+              </p>
+            </div>
+            <div class="step-item">
+              <div class="head"><b>AgentEvent &amp; Event Stream</b><span>наблюдаемость</span></div>
+              <p style="margin:0;color:var(--muted);font-size:14px">
+                Каждый значимый момент run — событие: run.started, step.begin, tool.called, tool.result,
+                run.completed. Поток событий — единый язык для CLI-рендера, логов и будущего web UI.
+              </p>
+            </div>
+            <div class="step-item">
+              <div class="head"><b>Cancellation</b><span>контроль</span></div>
+              <p style="margin:0;color:var(--muted);font-size:14px">
+                Run можно прервать извне (Ctrl+C, кнопка cancel). Ядро завершает текущий шаг gracefully
+                и выставляет status cancelled — не обрывает процесс посреди записи в контекст.
+              </p>
+            </div>
+            <div class="step-item">
+              <div class="head"><b>Config вместо Hardcode</b><span>зрелость</span></div>
+              <p style="margin:0;color:var(--muted);font-size:14px">
+                API key, base URL, model name — из env или конфиг-файла, не из тела кода.
+                Hardcode с этапа 1 осознанно снимается. Секреты не попадают в репозиторий.
+              </p>
+            </div>
+            <div class="step-item">
+              <div class="head"><b>Thin Client</b><span>граница</span></div>
+              <p style="margin:0;color:var(--muted);font-size:14px">
+                toy_agent после рефакторинга: только wiring (какой ModelClient, какой режим) + отображение событий.
+                Вся логика цикла — в agent_core.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="stage-section">
+          <h3>Паттерны, которые закрепляем</h3>
+          <ul>
+            <li><strong>Ports &amp; Adapters (Hexagonal)</strong> — ядро в центре, адаптеры (mock, OpenAI, CLI) снаружи.</li>
+            <li><strong>Dependency Inversion</strong> — core → Protocol, не core → HTTP-клиент.</li>
+            <li><strong>Observer / Pub-Sub</strong> — подписчики на AgentEvent, не опрос состояния.</li>
+            <li><strong>State Machine</strong> — RunState с явными переходами.</li>
+            <li><strong>Strategy</strong> — ModelClient как взаимозаменяемая стратегия.</li>
+          </ul>
+        </section>
+
+        <section class="stage-section">
+          <h3>Архитектура (концептуально)</h3>
+          <div class="flow-diagram">
+            <span class="node">Client</span>
+            <span class="arrow">→</span>
+            <span class="node">create_agent</span>
+            <span class="arrow">→</span>
+            <span class="node">Agent Core</span>
+            <span class="arrow">↔</span>
+            <span class="node">ModelClient</span>
+            <span class="arrow">→</span>
+            <span class="node">Event Stream</span>
+            <span class="arrow">→</span>
+            <span class="node">Observer</span>
+          </div>
+          <p>
+            Клиент создаёт агент, передаёт ModelClient (mock или live) и набор tools, запускает run.
+            Ядро крутит цикл и публикует события. Клиент подписывается и рисует вывод — или просто
+            собирает события в лог. Тот же Agent Core позже будет стоять за HTTP API без изменений.
+          </p>
+        </section>
+
+        <section class="stage-section">
+          <h3>Связь с этапом 1</h3>
+          <ul>
+            <li>Agent Loop, Message Roles, Tool Call — без изменений по смыслу, меняется <strong>место жительства</strong>.</li>
+            <li>Mock model → реализация ModelClient.</li>
+            <li>Real provider → другая реализация того же ModelClient.</li>
+            <li>Hardcode → config.</li>
+            <li>Print в терминал → подписка на AgentEvent.</li>
+          </ul>
+        </section>
+      </div>
+
+      <!-- ── Panel: Example ── -->
+      <div data-panel="example" class="stage-panel">
+        <section class="stage-section">
+          <h3>Сценарий: один run, два провайдера</h3>
+          <p><strong>Задача:</strong> та же user-задача, сначала mock, потом live — Agent Core и события идентичны по форме.</p>
+          <ol>
+            <li>Клиент создаёт агент с MockModelClient → запускает run.</li>
+            <li>Поток событий: run.started → step.begin → tool.called → tool.result → … → run.completed.</li>
+            <li>Клиент меняет только ModelClient на OpenAIModelClient (config из env) → тот же run API.</li>
+            <li>Форма событий та же; меняется только содержимое (кто выбрал tool — скрипт vs модель).</li>
+            <li>Джун видит: ядро не переписывалось, сменился адаптер.</li>
+          </ol>
+        </section>
+
+        <section class="stage-section">
+          <h3>Сценарий: отмена run</h3>
+          <p><strong>Задача:</strong> пользователь прерывает долгий run (Ctrl+C или cancel).</p>
+          <ol>
+            <li>Run в состоянии running, модель или tool на шаге N.</li>
+            <li>Клиент сигнализирует отмену → ядро перестаёт запускать новые шаги.</li>
+            <li>Текущий шаг по возможности завершается cleanly.</li>
+            <li>Событие run.cancelled, финальный status: cancelled.</li>
+            <li>История сообщений и событий до момента отмены сохранена — можно inspect.</li>
+          </ol>
+        </section>
+
+        <section class="stage-section">
+          <h3>Сценарий: replay событий</h3>
+          <p><strong>Задача:</strong> после run восстановить, что происходило, без повторного вызова LLM.</p>
+          <ol>
+            <li>Клиент сохранил список AgentEvent за run (в памяти или файл — не важно на этом этапе).</li>
+            <li>Повторный прогон «рендера» по сохранённым событиям даёт тот же timeline.</li>
+            <li>Это задел под web UI и server persistence на этапах 6–7.</li>
+          </ol>
+        </section>
+
+        <section class="stage-section">
+          <h3>Сценарий: ошибка ModelClient</h3>
+          <p><strong>Задача:</strong> live provider вернул 429 или timeout на шаге 2.</p>
+          <ol>
+            <li>ModelClient пробрасывает ошибку в ядро структурированно (не raw exception наружу).</li>
+            <li>Событие run.failed с причиной.</li>
+            <li>Status: failed. Run не зависает, не corrupts историю.</li>
+          </ol>
+        </section>
+
+        <section class="stage-section">
+          <h3>Что важно понять из примеров</h3>
+          <ul>
+            <li><strong>Ядро стабильно</strong> — меняются адаптеры и клиенты, не цикл.</li>
+            <li><strong>События — контракт</strong> между runtime и любым UI.</li>
+            <li>Отмена и ошибки провайдера — first-class состояния, не afterthought.</li>
+            <li>Config и секреты — ответственность клиента/адаптера, не ядра.</li>
+          </ul>
+        </section>
+      </div>
+
+      <!-- ── Panel: Steps ── -->
+      <div data-panel="steps" class="stage-panel">
+        <section class="stage-section">
+          <h3>Неделя 1 — выделение ядра и контракт</h3>
+          <div class="step-list">
+            <div class="step-item">
+              <div class="head"><b>Дни 1–2</b><span>Границы</span></div>
+              <ul>
+                <li>Что входит в agent_core, что остаётся в toy_agent.</li>
+                <li>Dependency rule: ядро не импортирует CLI, HTTP-библиотеки напрямую в цикле.</li>
+                <li>Перенос цикла из этапа 1 без изменения поведения.</li>
+              </ul>
+            </div>
+            <div class="step-item">
+              <div class="head"><b>Дни 3–4</b><span>ModelClient</span></div>
+              <ul>
+                <li>Protocol: один метод «complete» (или async-аналог).</li>
+                <li>MockModelClient — из mock этапа 1.</li>
+                <li>OpenAIModelClient — из live этапа 1, config из env.</li>
+                <li>Ядро работает с любой реализацией.</li>
+              </ul>
+            </div>
+            <div class="step-item">
+              <div class="head"><b>День 5</b><span>RunState</span></div>
+              <ul>
+                <li>Явные статусы и переходы.</li>
+                <li>Запрет невалидных переходов (completed → running).</li>
+                <li>RunState доступен наблюдателям через события и snapshot.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="stage-section">
+          <h3>Неделя 2 — события, отмена, клиент</h3>
+          <div class="step-list">
+            <div class="step-item">
+              <div class="head"><b>Дни 6–7</b><span>AgentEvent</span></div>
+              <ul>
+                <li>Каталог событий: run, step, tool, model, error.</li>
+                <li>Async-итератор или callback-подписка на поток.</li>
+                <li>toy_agent рисует timeline только из событий, не из print внутри цикла.</li>
+              </ul>
+            </div>
+            <div class="step-item">
+              <div class="head"><b>День 8</b><span>Cancellation</span></div>
+              <ul>
+                <li>Отмена через asyncio cancellation или явный cancel token.</li>
+                <li>Graceful shutdown: status cancelled, событие run.cancelled.</li>
+              </ul>
+            </div>
+            <div class="step-item">
+              <div class="head"><b>День 9</b><span>Config</span></div>
+              <ul>
+                <li>Env: API key, base URL, model name.</li>
+                <li>Нет секретов в git; .env.example для документации.</li>
+              </ul>
+            </div>
+            <div class="step-item">
+              <div class="head"><b>День 10</b><span>Закрепление</span></div>
+              <ul>
+                <li>Тесты ядра только с FakeModelClient — без network.</li>
+                <li>Ручной live-прогон через toy_agent.</li>
+                <li>Устное объяснение: зачем события понадобятся на этапе 6 (server).</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- ── Panel: DoD ── -->
+      <div data-panel="dod" class="stage-panel">
+        <section class="stage-section">
+          <h3>Definition of Done — Этап 2: Agent Core Library</h3>
+          <p>
+            Этап завершён, когда agent_core — самостоятельная библиотека с чёткими границами,
+            toy_agent стал тонким клиентом, а джун объясняет все концепции ниже.
+          </p>
+        </section>
+
+        <div class="dod-group">
+          <h4>📦 Границы библиотеки</h4>
+          <label><input type="checkbox"> Agent Core — отдельный пакет, импортируется toy_agent как зависимость</label>
+          <label><input type="checkbox"> Ядро не импортирует Typer, Rich, FastAPI, pathlib для fs-операций, subprocess</label>
+          <label><input type="checkbox"> Поведение цикла из этапа 1 сохранено: tool calls, max_steps, unknown tool</label>
+          <label><input type="checkbox"> toy_agent только собирает зависимости, запускает run и отображает события</label>
+        </div>
+
+        <div class="dod-group">
+          <h4>🔌 ModelClient (Protocol)</h4>
+          <label><input type="checkbox"> Единый контракт для mock и live: messages in → decision out</label>
+          <label><input type="checkbox"> MockModelClient — детерминирован, используется в pytest</label>
+          <label><input type="checkbox"> OpenAIModelClient (или аналог) — config из env, не hardcode</label>
+          <label><input type="checkbox"> Смена провайдера не требует правок в Agent Core</label>
+          <label><input type="checkbox"> Ошибки провайдера (timeout, 401, 429) → structured failure, не необработанный crash</label>
+        </div>
+
+        <div class="dod-group">
+          <h4>🔄 RunState</h4>
+          <label><input type="checkbox"> Статусы: pending, running, completed, failed, cancelled, max_steps</label>
+          <label><input type="checkbox"> Переходы предсказуемы; финальный status один на run</label>
+          <label><input type="checkbox"> RunState обновляется на каждом значимом переходе и отражается в событиях</label>
+        </div>
+
+        <div class="dod-group">
+          <h4>📡 AgentEvent &amp; Event Stream</h4>
+          <label><input type="checkbox"> Минимальный набор: run.started, step.begin, tool.called, tool.result, run.completed / run.failed / run.cancelled</label>
+          <label><input type="checkbox"> Клиент может подписаться на поток и отрисовать timeline без знания внутренностей цикла</label>
+          <label><input type="checkbox"> Сохранённый список событий позволяет replay timeline без повторного LLM-вызова</label>
+          <label><input type="checkbox"> Джун объясняет: почему события — основа для CLI, server и web</label>
+        </div>
+
+        <div class="dod-group">
+          <h4>⏹ Cancellation</h4>
+          <label><input type="checkbox"> Run можно отменить из клиента во время running</label>
+          <label><input type="checkbox"> После отмены status = cancelled, новые шаги не стартуют</label>
+          <label><input type="checkbox"> Событие run.cancelled публикуется в поток</label>
+          <label><input type="checkbox"> История до момента отмены не теряется</label>
+        </div>
+
+        <div class="dod-group">
+          <h4>🔐 Config</h4>
+          <label><input type="checkbox"> API key, base URL, model — из env (или конфига), не из исходников</label>
+          <label><input type="checkbox"> .env в .gitignore; есть .env.example без секретов</label>
+          <label><input type="checkbox"> Джун объясняет, почему hardcode с этапа 1 сняли</label>
+        </div>
+
+        <div class="dod-group">
+          <h4>✅ Тесты</h4>
+          <label><input type="checkbox"> Unit-тесты agent_core только с Fake/Mock ModelClient — без network</label>
+          <label><input type="checkbox"> Покрыты: happy path, max_steps, unknown tool, provider error, cancellation</label>
+          <label><input type="checkbox"> Live-прогон — вручную через toy_agent, не в CI</label>
+        </div>
+
+        <div class="dod-group">
+          <h4>🎓 Понимание (устная проверка ментором)</h4>
+          <label><input type="checkbox"> «Что такое Port и Adapter в нашем проекте?» — ModelClient vs mock/OpenAI реализации</label>
+          <label><input type="checkbox"> «Почему ядро не должно печатать в терминал?» — UI = клиент, логика = core</label>
+          <label><input type="checkbox"> «Зачем AgentEvent, если можно просто print?» — один runtime, много UI, replay, server</label>
+          <label><input type="checkbox"> «Что добавит этап 3?» — tool runtime: registry, validation, executor</label>
+        </div>
+      </div>
+    </div><!-- /view-stage-2 -->
+
+    <!-- Placeholders for stages 3-8 -->
+    <div id="view-stage-3" class="view"><div class="placeholder-stage"><h2>Этап 3 · Tool Runtime</h2><p>Детальный разбор скоро</p><div class="step-links" style="justify-content:center;margin-top:20px"><a href="steps/03-tool-runtime/README.md">README</a><a href="steps/03-tool-runtime/edge-cases.md">Edge cases</a></div></div></div>
+    <div id="view-stage-4" class="view"><div class="placeholder-stage"><h2>Этап 4 · Workspace Tools</h2><p>Детальный разбор скоро</p><div class="step-links" style="justify-content:center;margin-top:20px"><a href="steps/04-workspace-tools/README.md">README</a><a href="steps/04-workspace-tools/edge-cases.md">Edge cases</a></div></div></div>
+    <div id="view-stage-5" class="view"><div class="placeholder-stage"><h2>Этап 5 · Coding CLI</h2><p>Детальный разбор скоро</p><div class="step-links" style="justify-content:center;margin-top:20px"><a href="steps/05-coding-cli/README.md">README</a><a href="steps/05-coding-cli/edge-cases.md">Edge cases</a></div></div></div>
+    <div id="view-stage-6" class="view"><div class="placeholder-stage"><h2>Этап 6 · Agent Server</h2><p>Детальный разбор скоро</p><div class="step-links" style="justify-content:center;margin-top:20px"><a href="steps/06-agent-server/README.md">README</a><a href="steps/06-agent-server/edge-cases.md">Edge cases</a></div></div></div>
+    <div id="view-stage-7" class="view"><div class="placeholder-stage"><h2>Этап 7 · Web UI</h2><p>Детальный разбор скоро</p><div class="step-links" style="justify-content:center;margin-top:20px"><a href="steps/07-web-ui/README.md">README</a><a href="steps/07-web-ui/edge-cases.md">Edge cases</a></div></div></div>
+    <div id="view-stage-8" class="view"><div class="placeholder-stage"><h2>Этап 8 · Git-Aware</h2><p>Детальный разбор скоро</p><div class="step-links" style="justify-content:center;margin-top:20px"><a href="steps/08-git-aware/README.md">README</a><a href="steps/08-git-aware/edge-cases.md">Edge cases</a></div></div></div>
+
+      </div>
+
+      <aside class="rail" aria-label="Абстракции и паттерны">
+        <div class="rail-card">
+          <h3>Абстракции</h3>
+          <p class="hint">Сквозной словарь проекта — вводим по мере этапов.</p>
+          <div class="abs">
+            <div class="abs-item">
+              <b>Conversation &amp; Message</b>
+              <span>модель диалога: user / assistant / tool</span>
+            </div>
+            <div class="abs-item">
+              <b>AgentLoop &amp; RunState</b>
+              <span>цикл шагов и жизненный цикл run</span>
+            </div>
+            <div class="abs-item">
+              <b>ModelClient</b>
+              <span>провайдер LLM за единым интерфейсом</span>
+            </div>
+            <div class="abs-item">
+              <b>AgentEvent &amp; EventStream</b>
+              <span>единый поток событий для всех UI</span>
+            </div>
+            <div class="abs-item">
+              <b>Tool: Definition / Registry / Executor</b>
+              <span>описание, реестр и исполнение инструментов</span>
+            </div>
+            <div class="abs-item">
+              <b>ToolResult</b>
+              <span>явный контракт ok / error</span>
+            </div>
+            <div class="abs-item">
+              <b>Policy &amp; ApprovalDecision</b>
+              <span>allow / deny / require approval</span>
+            </div>
+            <div class="abs-item">
+              <b>Workspace &amp; FileService</b>
+              <span>sandbox, snapshot, hash-защита записи</span>
+            </div>
+            <div class="abs-item">
+              <b>ShellService &amp; RunningProcess</b>
+              <span>команды как управляемые процессы</span>
+            </div>
+            <div class="abs-item">
+              <b>SessionStore / Persistence</b>
+              <span>сохранение и resume сессий</span>
+            </div>
+            <div class="abs-item">
+              <b>RunController &amp; Transport</b>
+              <span>runtime поверх HTTP, SSE / WebSocket</span>
+            </div>
+            <div class="abs-item">
+              <b>GitService &amp; ChangeSet</b>
+              <span>состояние репозитория и свои изменения</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="rail-card">
+          <h3>Паттерны по приоритету</h3>
+          <p class="hint">P0 — освоить обязательно, P1 — важно, P2 — по мере роста.</p>
+          <div class="pat">
+            <div class="pat-item">
+              <span class="prio p0">P0</span>
+              <div>
+                <b>Ports &amp; Adapters (Hexagonal)</b>
+                <span>core зависит от интерфейсов, не от реализаций</span>
+              </div>
+            </div>
+            <div class="pat-item">
+              <span class="prio p0">P0</span>
+              <div>
+                <b>Dependency Inversion</b>
+                <span>fs / shell / model / git инъектируются в ядро</span>
+              </div>
+            </div>
+            <div class="pat-item">
+              <span class="prio p0">P0</span>
+              <div>
+                <b>Result / Explicit Errors</b>
+                <span>ошибки как данные, не исключения для control flow</span>
+              </div>
+            </div>
+            <div class="pat-item">
+              <span class="prio p0">P0</span>
+              <div>
+                <b>Observer / Pub-Sub</b>
+                <span>поток <code>AgentEvent</code> для CLI и web</span>
+              </div>
+            </div>
+            <div class="pat-item">
+              <span class="prio p1">P1</span>
+              <div>
+                <b>Strategy</b>
+                <span><code>ModelClient</code>, <code>ApprovalPolicy</code> — взаимозаменяемы</span>
+              </div>
+            </div>
+            <div class="pat-item">
+              <span class="prio p1">P1</span>
+              <div>
+                <b>Registry</b>
+                <span><code>ToolRegistry</code> — регистрация и поиск tools</span>
+              </div>
+            </div>
+            <div class="pat-item">
+              <span class="prio p1">P1</span>
+              <div>
+                <b>Command</b>
+                <span><code>ToolCall</code> как данные: лог, replay, approval</span>
+              </div>
+            </div>
+            <div class="pat-item">
+              <span class="prio p1">P1</span>
+              <div>
+                <b>State Machine</b>
+                <span>жизненный цикл run: running → waiting → done / failed</span>
+              </div>
+            </div>
+            <div class="pat-item">
+              <span class="prio p1">P1</span>
+              <div>
+                <b>Facade</b>
+                <span>сервисы поверх сырых fs / shell / git</span>
+              </div>
+            </div>
+            <div class="pat-item">
+              <span class="prio p2">P2</span>
+              <div>
+                <b>Middleware / Decorator</b>
+                <span>policy-проверки вокруг исполнения tool</span>
+              </div>
+            </div>
+            <div class="pat-item">
+              <span class="prio p2">P2</span>
+              <div>
+                <b>Repository</b>
+                <span><code>SessionStore</code> за абстракцией хранилища</span>
+              </div>
+            </div>
+            <div class="pat-item">
+              <span class="prio p2">P2</span>
+              <div>
+                <b>Adapter</b>
+                <span>провайдеры моделей и транспорты под один контракт</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rail-card">
+          <h3>Стек</h3>
+          <p class="hint">Python 3.12+, монорепо из пакетов и приложений.</p>
+          <div class="abs">
+            <div class="abs-item">
+              <b>uv workspace</b>
+              <span>пакеты <code>packages/*</code> и приложения <code>apps/*</code></span>
+            </div>
+            <div class="abs-item">
+              <b>pydantic v2</b>
+              <span>схемы инструментов и валидация входа</span>
+            </div>
+            <div class="abs-item">
+              <b>asyncio</b>
+              <span>цикл, стриминг событий, отмена run</span>
+            </div>
+            <div class="abs-item">
+              <b>typing.Protocol / ABC</b>
+              <span>порты: ModelClient, политики, сервисы</span>
+            </div>
+            <div class="abs-item">
+              <b>Typer + Rich</b>
+              <span>CLI и рендер timeline в терминале</span>
+            </div>
+            <div class="abs-item">
+              <b>FastAPI + sse-starlette</b>
+              <span>backend, runs и стриминг событий</span>
+            </div>
+            <div class="abs-item">
+              <b>SQLite</b>
+              <span>persistence сессий и событий</span>
+            </div>
+            <div class="abs-item">
+              <b>pytest + pytest-asyncio</b>
+              <span>тесты на каждом этапе</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    (function () {
+      const navButtons = document.querySelectorAll(".view-nav button[data-view]");
+      const drillButtons = document.querySelectorAll(".btn-drill, .stage-back");
+      const views = document.querySelectorAll(".view");
+      const rail = document.querySelector(".rail");
+
+      function showView(name) {
+        views.forEach(v => v.classList.toggle("active", v.id === "view-" + name));
+        navButtons.forEach(btn => {
+          const match = btn.dataset.view === name;
+          btn.classList.toggle("active", match);
+        });
+        if (rail) {
+          rail.style.display = name === "overview" ? "" : "none";
+        }
+        history.replaceState(null, "", name === "overview" ? "#" : "#" + name);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      navButtons.forEach(btn => {
+        if (btn.disabled) return;
+        btn.addEventListener("click", () => showView(btn.dataset.view));
+      });
+
+      drillButtons.forEach(btn => {
+        btn.addEventListener("click", () => showView(btn.dataset.view));
+      });
+
+      // Inner tabs for each stage detail view
+      document.querySelectorAll('[id^="view-stage-"]').forEach(stageView => {
+        const stageTabs = stageView.querySelectorAll(".stage-tabs button[data-panel]");
+        const stagePanels = stageView.querySelectorAll(".stage-panel[data-panel]");
+        stageTabs.forEach(btn => {
+          btn.addEventListener("click", () => {
+            const panelName = btn.dataset.panel;
+            stageTabs.forEach(t => t.classList.toggle("active", t === btn));
+            stagePanels.forEach(p => {
+              p.classList.toggle("active", p.dataset.panel === panelName);
+            });
+          });
+        });
+      });
+
+      // Hash on load
+      const hash = location.hash.replace("#", "");
+      if (hash && hash.startsWith("stage-") && document.getElementById("view-" + hash)) {
+        const btn = document.querySelector('.view-nav button[data-view="' + hash + '"]');
+        if (btn && !btn.disabled) showView(hash);
+      }
+    })();
+  </script>
+</body>
+</html>
