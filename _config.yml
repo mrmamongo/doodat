@@ -1,0 +1,30 @@
+title: Coding Agent
+description: Учебный маршрут — от toy agent до CLI и web UI
+lang: ru
+
+# GitHub Pages подставляет baseurl автоматически при сборке.
+# Локально: bundle exec jekyll serve --baseurl ""
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+
+defaults:
+  - scope:
+      path: ""
+      type: pages
+    values:
+      layout: default
+
+plugins:
+  - jekyll-relative-links
+
+relative_links:
+  enabled: true
+  collections: true
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - vendor
